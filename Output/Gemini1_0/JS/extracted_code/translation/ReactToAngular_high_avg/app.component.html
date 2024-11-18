@@ -1,0 +1,77 @@
+<div class="todoapp">
+  <header class="header">
+    <h1>todos</h1>
+    <input
+      #newField
+      class="new-todo"
+      placeholder="What needs to be done?"
+      (keydown)="handleNewTodoKeyDown($event)"
+      autoFocus
+    />
+  </header>
+  <section class="main" *ngIf="todos.length > 0">
+    <input
+      id="toggle-all"
+      class="toggle-all"
+      type="checkbox"
+      [checked]="activeTodoCount === 0"
+      (change)="toggleAll($event)"
+    />
+    <label for="toggle-all">Mark all as complete</label>
+    <ul class="todo-list">
+      <li
+        *ngFor="let todo of shownTodos"
+        [class.completed]="todo.completed"
+        [class.editing]="editing === todo.id"
+      >
+        <div class="view">
+          <input
+            class="toggle"
+            type="checkbox"
+            [checked]="todo.completed"
+            (change)="toggle(todo)"
+          />
+          <label (dblclick)="edit(todo)">{{ todo.title }}</label>
+          <button class="destroy" (click)="destroy(todo)"></button>
+        </div>
+        <input
+          *ngIf="editing === todo.id"
+          class="edit"
+          [value]="todo.title"
+          (blur)="save(todo, $event.target.value)"
+          (keydown)="handleKeyDown($event, todo)"
+          (change)="handleChange($event)"
+        />
+      </li>
+    </ul>
+  </section>
+  <footer class="footer" *ngIf="todos.length > 0">
+    <span class="todo-count">
+      <strong>{{ activeTodoCount }}</strong> {{ activeTodoCount | pluralize }} left
+    </span>
+    <ul class="filters">
+      <li>
+        <a [routerLink]="['/']" [class.selected]="nowShowing === ALL_TODOS"
+          >All</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="['/active']"
+          [class.selected]="nowShowing === ACTIVE_TODOS"
+          >Active</a
+        >
+      </li>
+      <li>
+        <a
+          [routerLink]="['/completed']"
+          [class.selected]="nowShowing === COMPLETED_TODOS"
+          >Completed</a
+        >
+      </li>
+    </ul>
+    <button class="clear-completed" *ngIf="completedCount > 0" (click)="clearCompleted()">
+      Clear completed
+    </button>
+  </footer>
+</div>

@@ -1,0 +1,1 @@
+// This file is not present in the migrated codebase. The functionality of the PageCtrl component has been moved to the Page component.

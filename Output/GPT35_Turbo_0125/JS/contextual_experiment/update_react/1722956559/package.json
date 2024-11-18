@@ -1,0 +1,26 @@
+```json
+{
+  "name": "updated-react-app",
+  "version": "1.0.0",
+  "description": "Updated React application using TypeScript, Redux Toolkit, and nanoid",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.6.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "nanoid": "^3.1.23"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "@types/react-redux": "^7.1.16",
+    "typescript": "^4.3.5"
+  }
+}
+```

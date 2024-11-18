@@ -1,0 +1,12 @@
+<header class="header">
+  <h1>todos</h1>
+  <input class="new-todo" placeholder="What needs to be done?" [(ngModel)]="newTodoTitle" (keyup.enter)="addTodo()" autofocus>
+</header>
+<section class="main">
+  <input id="toggle-all" class="toggle-all" type="checkbox" (change)="toggleAllTodos($event)">
+  <label for="toggle-all">Mark all as complete</label>
+  <ul class="todo-list">
+    <app-todo-item *ngFor="let todo of (todos | async)" [todo]="todo"></app-todo-item>
+  </ul>
+</section>
+<app-todo-footer [nowShowing]="nowShowing" (clearCompleted)="clearCompletedTodos()" (updateNowShowing)="updateNowShowing($event)"></app-todo-footer>

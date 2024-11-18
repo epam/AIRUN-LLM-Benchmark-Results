@@ -1,0 +1,194 @@
+[
+    {
+        "role": "user",
+        "content": "\nYour task is to translate outdated AngularJS app code to recent version of React using functional components and hooks.\nOutdated application is composed of the following files:\n\nindex.html\njs/main.js\njs/app.js\njs/services/todoStorage.js\njs/directives/todoFocus.js\njs/directives/todoEscape.js\njs/controllers/todo.js\n\n\nYour task is to request content of each file and analyze its implementation.\nYou should ask for files content by the json command.\nExample:\n{\n    \"command\": \"read-file\",\n    \"file_path\": \"js/controllers/todo.js\"\n}\n\nAfter getting and analyzing of all file's content - think thoroughly and *return only new file structure* of translated React application in a form of JSON command.\nExample:\n{\n    \"command\": \"file-structure\",\n    \"file_paths\": [\n        \"./name1.ts\",\n        \"./name2.tsx\",\n        \"...\",\n    ]\n}\n \nAfter you return the file structure of the updated application, \nI will request you for each file by the file_path in the list and you should use following command to give me converted file.\nApply these instructions for translated application:\n    - Use the following libraries: TypeScript, Redux Toolkit with createSlice, and nanoid.\n    - Provide configuration of the store and provider if needed.\n    - Split the code into separate components.\n    - Optimize the code where possible.\n    - The converted code should not contain any TODOs.\n    - Return the translated code as markdown code snippets.\n    - Simply return the codebase without additional comments or explanations on how to convert it.\n\nExample:\n{\n    \"command\": \"write-file\",\n    \"content\": \"converted code is here\"\n}\n\nDo not add any comments in generated code and follow the instructions precisely. Once you finish the whole task, please issue the \"end\" command.\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"index.html\"}"
+    },
+    {
+        "role": "user",
+        "content": "<!doctype html>\n<html lang=\"en\" data-framework=\"angularjs\">\n\t<head>\n\t\t<meta charset=\"utf-8\">\n\t\t<title>AngularJS & RequireJS \u2022 TodoMVC</title>\n\t\t<link rel=\"stylesheet\" href=\"node_modules/todomvc-common/base.css\">\n\t\t<link rel=\"stylesheet\" href=\"node_modules/todomvc-app-css/index.css\">\n\t\t<style>[ng-cloak] { display: none; }</style>\n\t</head>\n\t<body>\n\t\t<section class=\"todoapp\" ng-controller=\"TodoController\">\n\t\t\t<header class=\"header\">\n\t\t\t\t<h1>todos</h1>\n\t\t\t\t<form class=\"todo-form\" ng-submit=\"addTodo()\">\n\t\t\t\t\t<input class=\"new-todo\" placeholder=\"What needs to be done?\" ng-model=\"newTodo\" autofocus>\n\t\t\t\t</form>\n\t\t\t</header>\n\t\t\t<section class=\"main\" ng-show=\"todos.length\" ng-cloak>\n\t\t\t\t<input id=\"toggle-all\" class=\"toggle-all\" type=\"checkbox\" ng-model=\"allChecked\" ng-click=\"markAll(allChecked)\">\n\t\t\t\t<label for=\"toggle-all\">Mark all as complete</label>\n\t\t\t\t<ul class=\"todo-list\">\n\t\t\t\t\t<li ng-repeat=\"todo in todos | filter:statusFilter track by $index\" ng-class=\"{completed: todo.completed, editing: todo == editedTodo}\">\n\t\t\t\t\t\t<div class=\"view\">\n\t\t\t\t\t\t\t<input class=\"toggle\" type=\"checkbox\" ng-model=\"todo.completed\">\n\t\t\t\t\t\t\t<label ng-dblclick=\"editTodo(todo)\">{{todo.title}}</label>\n\t\t\t\t\t\t\t<button class=\"destroy\" ng-click=\"removeTodo(todo)\"></button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<form ng-submit=\"doneEditing(todo)\">\n\t\t\t\t\t\t\t<input class=\"edit\" ng-trim=\"false\" ng-model=\"todo.title\" ng-blur=\"doneEditing(todo)\" todo-escape=\"revertEditing(todo)\" todo-focus=\"todo == editedTodo\">\n\t\t\t\t\t\t</form>\n\t\t\t\t\t</li>\n\t\t\t\t</ul>\n\t\t\t</section>\n\t\t\t<footer class=\"footer\" ng-show=\"todos.length\" ng-cloak>\n\t\t\t\t<span class=\"todo-count\"><strong>{{remainingCount}}</strong>\n\t\t\t\t\t<ng-pluralize count=\"remainingCount\" when=\"{ one: 'item left', other: 'items left' }\"></ng-pluralize>\n\t\t\t\t</span>\n\t\t\t\t<ul class=\"filters\">\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a ng-class=\"{selected: location.path() == '/'} \" href=\"#/\">All</a>\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a ng-class=\"{selected: location.path() == '/active'}\" href=\"#/active\">Active</a>\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a ng-class=\"{selected: location.path() == '/completed'}\" href=\"#/completed\">Completed</a>\n\t\t\t\t\t</li>\n\t\t\t\t</ul>\n\t\t\t\t<button class=\"clear-completed\" ng-click=\"clearDoneTodos()\" ng-show=\"remainingCount < todos.length\">Clear completed</button>\n\t\t\t</footer>\n\t\t</section>\n\t\t<footer class=\"info\">\n\t\t\t<p>Double-click to edit a todo</p>\n\t\t\t<p>Credits:\n\t\t\t\t<a href=\"http://twitter.com/cburgdorf\">Christoph Burgdorf</a>,\n\t\t\t\t<a href=\"http://ericbidelman.com\">Eric Bidelman</a>,\n\t\t\t\t<a href=\"http://jacobmumm.com\">Jacob Mumm</a>,\n\t\t\t\t<a href=\"http://blog.igorminar.com\">Igor Minar</a> and\n\t\t\t\t<a href=\"http://twitter.com/passy\">Pascal Hartig</a>\n\t\t\t</p>\n\t\t\t<p>Part of <a href=\"http://todomvc.com\">TodoMVC</a></p>\n\t\t</footer>\n\t\t<script src=\"node_modules/todomvc-common/base.js\"></script>\n\t\t<script data-main=\"js/main\" src=\"node_modules/requirejs/require.js\"></script>\n\t</body>\n</html>\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"js/main.js\"}"
+    },
+    {
+        "role": "user",
+        "content": "/*global require*/\n'use strict';\n\nrequire.config({\n\tpaths: {\n\t\tangular: '../node_modules/angular/angular'\n\t},\n\tshim: {\n\t\tangular: {\n\t\t\texports: 'angular'\n\t\t}\n\t},\n\tdeps: ['app']\n});\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"js/app.js\"}"
+    },
+    {
+        "role": "user",
+        "content": "/*global require*/\n'use strict';\n\nrequire([\n\t'angular'\n], function (angular) {\n\trequire([\n\t\t'controllers/todo', \n\t\t'directives/todoFocus', \n\t\t'directives/todoEscape',\n\t\t'services/todoStorage'\n\t], function (todoCtrl, todoFocusDir, todoEscapeDir, todoStorageSrv) {\n\t\tangular\n\t\t\t.module('todomvc', [todoFocusDir, todoEscapeDir, todoStorageSrv])\n\t\t\t.controller('TodoController', todoCtrl);\n\t\tangular.bootstrap(document, ['todomvc']);\t\t\t\n\t});\t\n});\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"js/services/todoStorage.js\"}"
+    },
+    {
+        "role": "user",
+        "content": "/*global define*/\n'use strict';\n\n/**\n * Services that persists and retrieves TODOs from localStorage.\n */\n \ndefine([\n\t'angular'\n], function (angular) {\n\tvar moduleName = 'TodoStorageModule';\n\tangular\n\t\t.module(moduleName, [])\n\t\t.factory('todoStorage', function () {\n\t\t\tvar STORAGE_ID = 'todos-angularjs-requirejs';\n\n\t\t\treturn {\n\t\t\t\tget: function () {\n\t\t\t\t\treturn JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');\n\t\t\t\t},\n\n\t\t\t\tput: function (todos) {\n\t\t\t\t\tlocalStorage.setItem(STORAGE_ID, JSON.stringify(todos));\n\t\t\t\t}\n\t\t\t};\n\t\t});\n\treturn moduleName;\n});\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"js/directives/todoFocus.js\"}"
+    },
+    {
+        "role": "user",
+        "content": "/*global define*/\n'use strict';\n\n/**\n * Directive that places focus on the element it is applied to when the expression it binds to evaluates to true.\n */\n \ndefine([\n\t'angular'\n], function (angular) {\n\tvar moduleName = 'TodoFocusDirective';\n\tangular\n\t\t.module(moduleName, [])\n\t\t.directive('todoFocus', ['$timeout', function ($timeout) {\n\t\t\treturn function (scope, elem, attrs) {\n\t\t\t\tscope.$watch(attrs.todoFocus, function (newval) {\n\t\t\t\t\tif (newval) {\n\t\t\t\t\t\t$timeout(function () {\n\t\t\t\t\t\t\telem[0].focus();\n\t\t\t\t\t\t}, 0, false);\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t};\n\t\t}]);\n\treturn moduleName;\n});\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"js/directives/todoEscape.js\"}"
+    },
+    {
+        "role": "user",
+        "content": "/*global define*/\n'use strict';\n\n/**\n * Directive that catches the \"Escape\" key on the element applied to and evaluates the expression it binds to.\n */\n\ndefine([\n\t'angular'\n], function (angular) {\n\tvar moduleName = 'TodoEscapeDirective';\n\tangular\n\t\t.module(moduleName, [])\n\t\t.directive('todoEscape', function () {\n\t\t\tvar ESCAPE_KEY = 27;\n\n\t\t\treturn function (scope, elem, attrs) {\n\t\t\t\telem.bind('keydown', function (event) {\n\t\t\t\t\tif (event.keyCode === ESCAPE_KEY) {\n\t\t\t\t\t\tscope.$apply(attrs.todoEscape);\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tscope.$on('$destroy', function () {\n\t\t\t\t\telem.unbind('keydown');\n\t\t\t\t});\n\t\t\t};\n\t\t});\n\treturn moduleName;\n});\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"read-file\", \"file_path\": \"js/controllers/todo.js\"}"
+    },
+    {
+        "role": "user",
+        "content": "/*global define*/\n'use strict';\n\n/**\n * The main controller for the app. The controller:\n * - retrieves and persist the model via the todoStorage service\n * - exposes the model to the template and provides event handlers\n */\n\ndefine([\n\t'angular'\n], function (angular) {\n\treturn ['$scope', '$location', 'todoStorage', 'filterFilter',\n\t\tfunction ($scope, $location, todoStorage, filterFilter) {\n\t\t\tvar todos = $scope.todos = todoStorage.get();\n\n\t\t\t$scope.newTodo = '';\n\t\t\t$scope.editedTodo = null;\n\n\t\t\t$scope.$watch('todos', function () {\n\t\t\t\t$scope.remainingCount = filterFilter(todos, { completed: false }).length;\n\t\t\t\t$scope.doneCount = todos.length - $scope.remainingCount;\n\t\t\t\t$scope.allChecked = !$scope.remainingCount;\n\t\t\t\ttodoStorage.put(todos);\n\t\t\t}, true);\n\n\t\t\tif ($location.path() === '') {\n\t\t\t\t$location.path('/');\n\t\t\t}\n\n\t\t\t$scope.location = $location;\n\n\t\t\t$scope.$watch('location.path()', function (path) {\n\t\t\t\t$scope.statusFilter = (path === '/active') ?\n\t\t\t\t\t{ completed: false } : (path === '/completed') ?\n\t\t\t\t\t{ completed: true } : null;\n\t\t\t});\n\n\n\t\t\t$scope.addTodo = function () {\n\t\t\t\tvar newTodo = $scope.newTodo.trim();\n\t\t\t\tif (!newTodo.length) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\ttodos.push({\n\t\t\t\t\ttitle: newTodo,\n\t\t\t\t\tcompleted: false\n\t\t\t\t});\n\n\t\t\t\t$scope.newTodo = '';\n\t\t\t};\n\n\n\t\t\t$scope.editTodo = function (todo) {\n\t\t\t\t$scope.editedTodo = todo;\n\t\t\t\t// Clone the original todo to restore it on demand.\n\t\t\t\t$scope.originalTodo = angular.copy(todo);\n\t\t\t};\n\n\n\t\t\t$scope.doneEditing = function (todo) {\n\t\t\t\t$scope.editedTodo = null;\n\t\t\t\ttodo.title = todo.title.trim();\n\n\t\t\t\tif (!todo.title) {\n\t\t\t\t\t$scope.removeTodo(todo);\n\t\t\t\t}\n\t\t\t};\n\n\t\t\t$scope.revertEditing = function (todo) {\n\t\t\t\ttodos[todos.indexOf(todo)] = $scope.originalTodo;\n\t\t\t\t$scope.doneEditing($scope.originalTodo);\n\t\t\t};\n\n\t\t\t$scope.removeTodo = function (todo) {\n\t\t\t\ttodos.splice(todos.indexOf(todo), 1);\n\t\t\t};\n\n\n\t\t\t$scope.clearDoneTodos = function () {\n\t\t\t\t$scope.todos = todos = todos.filter(function (val) {\n\t\t\t\t\treturn !val.completed;\n\t\t\t\t});\n\t\t\t};\n\n\n\t\t\t$scope.markAll = function (done) {\n\t\t\t\ttodos.forEach(function (todo) {\n\t\t\t\t\ttodo.completed = done;\n\t\t\t\t});\n\t\t\t};\n\t\t}\n\t];\n});\n"
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"file-structure\", \"file_paths\": [\"./src/components/App.tsx\", \"./src/components/TodoList.tsx\", \"./src/components/TodoItem.tsx\", \"./src/components/Footer.tsx\", \"./src/store/index.ts\", \"./src/store/todos/todosSlice.ts\", \"./src/types/index.ts\", \"./src/index.tsx\"]}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/index.tsx"
+    },
+    {
+        "role": "assistant",
+        "content": "```tsx\nimport React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport { Provider } from 'react-redux';\nimport { BrowserRouter } from 'react-router-dom';\nimport App from './components/App';\nimport { store } from './store';\nimport './index.css';\n\nReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(\n  <React.StrictMode>\n    <Provider store={store}>\n      <BrowserRouter>\n        <App />\n      </BrowserRouter>\n    </Provider>\n  </React.StrictMode>\n);\n\n```"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/index.tsx\", \"content\": \"```tsx\\nimport React from 'react';\\nimport ReactDOM from 'react-dom/client';\\nimport { Provider } from 'react-redux';\\nimport { BrowserRouter } from 'react-router-dom';\\nimport App from './components/App';\\nimport { store } from './store';\\nimport './index.css';\\n\\nReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(\\n  <React.StrictMode>\\n    <Provider store={store}>\\n      <BrowserRouter>\\n        <App />\\n      </BrowserRouter>\\n    </Provider>\\n  </React.StrictMode>\\n);\\n\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/types/index.ts"
+    },
+    {
+        "role": "assistant",
+        "content": "```typescript\nexport interface Todo {\n  id: string;\n  title: string;\n  completed: boolean;\n}\n\nexport enum FilterValues {\n  All = 'all',\n  Active = 'active',\n  Completed = 'completed',\n}\n\n```\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/types/index.ts\", \"content\": \"```typescript\\nexport interface Todo {\\n  id: string;\\n  title: string;\\n  completed: boolean;\\n}\\n\\nexport enum FilterValues {\\n  All = 'all',\\n  Active = 'active',\\n  Completed = 'completed',\\n}\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/store/todos/todosSlice.ts"
+    },
+    {
+        "role": "assistant",
+        "content": "```typescript\nimport { createSlice, PayloadAction } from '@reduxjs/toolkit';\nimport { nanoid } from 'nanoid';\nimport { Todo } from '../../types';\n\ninterface TodosState {\n  todos: Todo[];\n}\n\nconst initialState: TodosState = {\n  todos: [],\n};\n\nconst todosSlice = createSlice({\n  name: 'todos',\n  initialState,\n  reducers: {\n    addTodo: {\n      reducer: (state, action: PayloadAction<Todo>) => {\n        state.todos.push(action.payload);\n      },\n      prepare: (title: string) => ({\n        payload: {\n          id: nanoid(),\n          title,\n          completed: false,\n        },\n      }),\n    },\n    toggleTodo: (state, action: PayloadAction<string>) => {\n      const index = state.todos.findIndex((todo) => todo.id === action.payload);\n      if (index !== -1) {\n        state.todos[index].completed = !state.todos[index].completed;\n      }\n    },\n    removeTodo: (state, action: PayloadAction<string>) => {\n      state.todos = state.todos.filter((todo) => todo.id !== action.payload);\n    },\n    editTodo: (\n      state,\n      action: PayloadAction<{ id: string; title: string }>\n    ) => {\n      const index = state.todos.findIndex(\n        (todo) => todo.id === action.payload.id\n      );\n      if (index !== -1) {\n        state.todos[index].title = action.payload.title;\n      }\n    },\n    clearCompletedTodos: (state) => {\n      state.todos = state.todos.filter((todo) => !todo.completed);\n    },\n    toggleAllTodos: (state, action: PayloadAction<boolean>) => {\n      state.todos.forEach((todo) => {\n        todo.completed = action.payload;\n      });\n    },\n  },\n});\n\nexport const {\n  addTodo,\n  toggleTodo,\n  removeTodo,\n  editTodo,\n  clearCompletedTodos,\n  toggleAllTodos,\n} = todosSlice.actions;\n\nexport default todosSlice.reducer;\n\n```\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/store/todos/todosSlice.ts\", \"content\": \"```typescript\\nimport { createSlice, PayloadAction } from '@reduxjs/toolkit';\\nimport { nanoid } from 'nanoid';\\nimport { Todo } from '../../types';\\n\\ninterface TodosState {\\n  todos: Todo[];\\n}\\n\\nconst initialState: TodosState = {\\n  todos: [],\\n};\\n\\nconst todosSlice = createSlice({\\n  name: 'todos',\\n  initialState,\\n  reducers: {\\n    addTodo: {\\n      reducer: (state, action: PayloadAction<Todo>) => {\\n        state.todos.push(action.payload);\\n      },\\n      prepare: (title: string) => ({\\n        payload: {\\n          id: nanoid(),\\n          title,\\n          completed: false,\\n        },\\n      }),\\n    },\\n    toggleTodo: (state, action: PayloadAction<string>) => {\\n      const index = state.todos.findIndex((todo) => todo.id === action.payload);\\n      if (index !== -1) {\\n        state.todos[index].completed = !state.todos[index].completed;\\n      }\\n    },\\n    removeTodo: (state, action: PayloadAction<string>) => {\\n      state.todos = state.todos.filter((todo) => todo.id !== action.payload);\\n    },\\n    editTodo: (\\n      state,\\n      action: PayloadAction<{ id: string; title: string }>\\n    ) => {\\n      const index = state.todos.findIndex(\\n        (todo) => todo.id === action.payload.id\\n      );\\n      if (index !== -1) {\\n        state.todos[index].title = action.payload.title;\\n      }\\n    },\\n    clearCompletedTodos: (state) => {\\n      state.todos = state.todos.filter((todo) => !todo.completed);\\n    },\\n    toggleAllTodos: (state, action: PayloadAction<boolean>) => {\\n      state.todos.forEach((todo) => {\\n        todo.completed = action.payload;\\n      });\\n    },\\n  },\\n});\\n\\nexport const {\\n  addTodo,\\n  toggleTodo,\\n  removeTodo,\\n  editTodo,\\n  clearCompletedTodos,\\n  toggleAllTodos,\\n} = todosSlice.actions;\\n\\nexport default todosSlice.reducer;\\n\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/store/index.ts"
+    },
+    {
+        "role": "assistant",
+        "content": "```typescript\nimport { configureStore } from '@reduxjs/toolkit';\nimport todosReducer from './todos/todosSlice';\n\nexport const store = configureStore({\n  reducer: {\n    todos: todosReducer,\n  },\n});\n\nexport type RootState = ReturnType<typeof store.getState>;\nexport type AppDispatch = typeof store.dispatch;\n\n```\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/store/index.ts\", \"content\": \"```typescript\\nimport { configureStore } from '@reduxjs/toolkit';\\nimport todosReducer from './todos/todosSlice';\\n\\nexport const store = configureStore({\\n  reducer: {\\n    todos: todosReducer,\\n  },\\n});\\n\\nexport type RootState = ReturnType<typeof store.getState>;\\nexport type AppDispatch = typeof store.dispatch;\\n\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/components/Footer.tsx"
+    },
+    {
+        "role": "assistant",
+        "content": "```tsx\nimport React from 'react';\nimport { useAppSelector, useAppDispatch } from '../store/hooks';\nimport {\n  clearCompletedTodos,\n  toggleAllTodos,\n} from '../store/todos/todosSlice';\nimport { Link, useLocation } from 'react-router-dom';\nimport { FilterValues } from '../types';\n\nconst Footer: React.FC = () => {\n  const todos = useAppSelector((state) => state.todos.todos);\n  const dispatch = useAppDispatch();\n  const location = useLocation();\n\n  const remainingCount = todos.filter((todo) => !todo.completed).length;\n\n  const handleClearCompleted = () => {\n    dispatch(clearCompletedTodos());\n  };\n\n  const handleToggleAll = () => {\n    dispatch(toggleAllTodos(remainingCount > 0));\n  };\n\n  return (\n    <footer className=\"footer\">\n      <span className=\"todo-count\">\n        <strong>{remainingCount}</strong>{' '}\n        {remainingCount === 1 ? 'item' : 'items'} left\n      </span>\n      <ul className=\"filters\">\n        {[\n          [FilterValues.All, ''],\n          [FilterValues.Active, '/active'],\n          [FilterValues.Completed, '/completed'],\n        ].map(([filter, path]) => (\n          <li key={filter}>\n            <Link\n              to={path}\n              className={location.pathname === path ? 'selected' : ''}\n            >\n              {filter}\n            </Link>\n          </li>\n        ))}\n      </ul>\n      {todos.length - remainingCount > 0 && (\n        <button className=\"clear-completed\" onClick={handleClearCompleted}>\n          Clear completed\n        </button>\n      )}\n      <input\n        id=\"toggle-all\"\n        className=\"toggle-all\"\n        type=\"checkbox\"\n        checked={remainingCount === 0}\n        onChange={handleToggleAll}\n      />\n      <label htmlFor=\"toggle-all\">Mark all as complete</label>\n    </footer>\n  );\n};\n\nexport default Footer;\n\n```\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/components/Footer.tsx\", \"content\": \"```tsx\\nimport React from 'react';\\nimport { useAppSelector, useAppDispatch } from '../store/hooks';\\nimport {\\n  clearCompletedTodos,\\n  toggleAllTodos,\\n} from '../store/todos/todosSlice';\\nimport { Link, useLocation } from 'react-router-dom';\\nimport { FilterValues } from '../types';\\n\\nconst Footer: React.FC = () => {\\n  const todos = useAppSelector((state) => state.todos.todos);\\n  const dispatch = useAppDispatch();\\n  const location = useLocation();\\n\\n  const remainingCount = todos.filter((todo) => !todo.completed).length;\\n\\n  const handleClearCompleted = () => {\\n    dispatch(clearCompletedTodos());\\n  };\\n\\n  const handleToggleAll = () => {\\n    dispatch(toggleAllTodos(remainingCount > 0));\\n  };\\n\\n  return (\\n    <footer className=\\\"footer\\\">\\n      <span className=\\\"todo-count\\\">\\n        <strong>{remainingCount}</strong>{' '}\\n        {remainingCount === 1 ? 'item' : 'items'} left\\n      </span>\\n      <ul className=\\\"filters\\\">\\n        {[\\n          [FilterValues.All, ''],\\n          [FilterValues.Active, '/active'],\\n          [FilterValues.Completed, '/completed'],\\n        ].map(([filter, path]) => (\\n          <li key={filter}>\\n            <Link\\n              to={path}\\n              className={location.pathname === path ? 'selected' : ''}\\n            >\\n              {filter}\\n            </Link>\\n          </li>\\n        ))}\\n      </ul>\\n      {todos.length - remainingCount > 0 && (\\n        <button className=\\\"clear-completed\\\" onClick={handleClearCompleted}>\\n          Clear completed\\n        </button>\\n      )}\\n      <input\\n        id=\\\"toggle-all\\\"\\n        className=\\\"toggle-all\\\"\\n        type=\\\"checkbox\\\"\\n        checked={remainingCount === 0}\\n        onChange={handleToggleAll}\\n      />\\n      <label htmlFor=\\\"toggle-all\\\">Mark all as complete</label>\\n    </footer>\\n  );\\n};\\n\\nexport default Footer;\\n\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/components/TodoItem.tsx"
+    },
+    {
+        "role": "assistant",
+        "content": "```tsx\nimport React, { useState, useRef, useEffect } from 'react';\nimport { useAppDispatch } from '../store/hooks';\nimport {\n  toggleTodo,\n  removeTodo,\n  editTodo,\n} from '../store/todos/todosSlice';\n\ninterface TodoItemProps {\n  todo: {\n    id: string;\n    title: string;\n    completed: boolean;\n  };\n}\n\nconst TodoItem: React.FC<TodoItemProps> = ({ todo }) => {\n  const [isEditing, setIsEditing] = useState(false);\n  const [editText, setEditText] = useState(todo.title);\n\n  const inputRef = useRef<HTMLInputElement>(null);\n  const dispatch = useAppDispatch();\n\n  useEffect(() => {\n    if (isEditing) {\n      inputRef.current?.focus();\n    }\n  }, [isEditing]);\n\n  const handleDoubleClick = () => {\n    setIsEditing(true);\n  };\n\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n    setEditText(e.target.value);\n  };\n\n  const handleBlur = () => {\n    if (editText.trim() !== '') {\n      dispatch(editTodo({ id: todo.id, title: editText.trim() }));\n    } else {\n      dispatch(removeTodo(todo.id));\n    }\n    setIsEditing(false);\n  };\n\n  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {\n    if (e.key === 'Enter') {\n      handleBlur();\n    } else if (e.key === 'Escape') {\n      setEditText(todo.title);\n      setIsEditing(false);\n    }\n  };\n\n  const handleDestroy = () => {\n    dispatch(removeTodo(todo.id));\n  };\n\n  const handleToggle = () => {\n    dispatch(toggleTodo(todo.id));\n  };\n\n  return (\n    <li className={todo.completed ? 'completed' : ''}>\n      <div className=\"view\">\n        <input\n          className=\"toggle\"\n          type=\"checkbox\"\n          checked={todo.completed}\n          onChange={handleToggle}\n        />\n        <label onDoubleClick={handleDoubleClick}>{todo.title}</label>\n        <button className=\"destroy\" onClick={handleDestroy}></button>\n      </div>\n      {isEditing && (\n        <input\n          className=\"edit\"\n          value={editText}\n          onChange={handleInputChange}\n          onBlur={handleBlur}\n          onKeyDown={handleKeyDown}\n          ref={inputRef}\n        />\n      )}\n    </li>\n  );\n};\n\nexport default TodoItem;\n\n```\n\n\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/components/TodoItem.tsx\", \"content\": \"```tsx\\nimport React, { useState, useRef, useEffect } from 'react';\\nimport { useAppDispatch } from '../store/hooks';\\nimport {\\n  toggleTodo,\\n  removeTodo,\\n  editTodo,\\n} from '../store/todos/todosSlice';\\n\\ninterface TodoItemProps {\\n  todo: {\\n    id: string;\\n    title: string;\\n    completed: boolean;\\n  };\\n}\\n\\nconst TodoItem: React.FC<TodoItemProps> = ({ todo }) => {\\n  const [isEditing, setIsEditing] = useState(false);\\n  const [editText, setEditText] = useState(todo.title);\\n\\n  const inputRef = useRef<HTMLInputElement>(null);\\n  const dispatch = useAppDispatch();\\n\\n  useEffect(() => {\\n    if (isEditing) {\\n      inputRef.current?.focus();\\n    }\\n  }, [isEditing]);\\n\\n  const handleDoubleClick = () => {\\n    setIsEditing(true);\\n  };\\n\\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\\n    setEditText(e.target.value);\\n  };\\n\\n  const handleBlur = () => {\\n    if (editText.trim() !== '') {\\n      dispatch(editTodo({ id: todo.id, title: editText.trim() }));\\n    } else {\\n      dispatch(removeTodo(todo.id));\\n    }\\n    setIsEditing(false);\\n  };\\n\\n  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {\\n    if (e.key === 'Enter') {\\n      handleBlur();\\n    } else if (e.key === 'Escape') {\\n      setEditText(todo.title);\\n      setIsEditing(false);\\n    }\\n  };\\n\\n  const handleDestroy = () => {\\n    dispatch(removeTodo(todo.id));\\n  };\\n\\n  const handleToggle = () => {\\n    dispatch(toggleTodo(todo.id));\\n  };\\n\\n  return (\\n    <li className={todo.completed ? 'completed' : ''}>\\n      <div className=\\\"view\\\">\\n        <input\\n          className=\\\"toggle\\\"\\n          type=\\\"checkbox\\\"\\n          checked={todo.completed}\\n          onChange={handleToggle}\\n        />\\n        <label onDoubleClick={handleDoubleClick}>{todo.title}</label>\\n        <button className=\\\"destroy\\\" onClick={handleDestroy}></button>\\n      </div>\\n      {isEditing && (\\n        <input\\n          className=\\\"edit\\\"\\n          value={editText}\\n          onChange={handleInputChange}\\n          onBlur={handleBlur}\\n          onKeyDown={handleKeyDown}\\n          ref={inputRef}\\n        />\\n      )}\\n    </li>\\n  );\\n};\\n\\nexport default TodoItem;\\n\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/components/TodoList.tsx"
+    },
+    {
+        "role": "assistant",
+        "content": "```tsx\nimport React from 'react';\nimport { useAppSelector } from '../store/hooks';\nimport TodoItem from './TodoItem';\nimport { FilterValues } from '../types';\n\ninterface TodoListProps {\n  filter: FilterValues;\n}\n\nconst TodoList: React.FC<TodoListProps> = ({ filter }) => {\n  const todos = useAppSelector((state) => state.todos.todos);\n\n  const filteredTodos = todos.filter((todo) => {\n    switch (filter) {\n      case FilterValues.Active:\n        return !todo.completed;\n      case FilterValues.Completed:\n        return todo.completed;\n      default:\n        return true;\n    }\n  });\n\n  return (\n    <ul className=\"todo-list\">\n      {filteredTodos.map((todo) => (\n        <TodoItem key={todo.id} todo={todo} />\n      ))}\n    </ul>\n  );\n};\n\nexport default TodoList;\n\n```\n\n\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/components/TodoList.tsx\", \"content\": \"```tsx\\nimport React from 'react';\\nimport { useAppSelector } from '../store/hooks';\\nimport TodoItem from './TodoItem';\\nimport { FilterValues } from '../types';\\n\\ninterface TodoListProps {\\n  filter: FilterValues;\\n}\\n\\nconst TodoList: React.FC<TodoListProps> = ({ filter }) => {\\n  const todos = useAppSelector((state) => state.todos.todos);\\n\\n  const filteredTodos = todos.filter((todo) => {\\n    switch (filter) {\\n      case FilterValues.Active:\\n        return !todo.completed;\\n      case FilterValues.Completed:\\n        return todo.completed;\\n      default:\\n        return true;\\n    }\\n  });\\n\\n  return (\\n    <ul className=\\\"todo-list\\\">\\n      {filteredTodos.map((todo) => (\\n        <TodoItem key={todo.id} todo={todo} />\\n      ))}\\n    </ul>\\n  );\\n};\\n\\nexport default TodoList;\\n\\n```\"}"
+    },
+    {
+        "role": "user",
+        "content": "Give me converted code of ./src/components/App.tsx"
+    },
+    {
+        "role": "assistant",
+        "content": "```tsx\nimport React, { useState, useEffect } from 'react';\nimport { useAppDispatch } from '../store/hooks';\nimport { addTodo } from '../store/todos/todosSlice';\nimport TodoList from './TodoList';\nimport Footer from './Footer';\nimport { Routes, Route, useLocation } from 'react-router-dom';\nimport { FilterValues } from '../types';\n\nconst App: React.FC = () => {\n  const [newTodoText, setNewTodoText] = useState('');\n  const dispatch = useAppDispatch();\n  const location = useLocation();\n\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n    setNewTodoText(e.target.value);\n  };\n\n  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {\n    if (e.key === 'Enter' && newTodoText.trim() !== '') {\n      dispatch(addTodo(newTodoText.trim()));\n      setNewTodoText('');\n    }\n  };\n\n  useEffect(() => {\n    setNewTodoText('');\n  }, [location]);\n\n  return (\n    <section className=\"todoapp\">\n      <header className=\"header\">\n        <h1>todos</h1>\n        <input\n          className=\"new-todo\"\n          placeholder=\"What needs to be done?\"\n          autoFocus\n          value={newTodoText}\n          onChange={handleInputChange}\n          onKeyDown={handleKeyDown}\n        />\n      </header>\n      <Routes>\n        <Route path=\"/\" element={<TodoList filter={FilterValues.All} />} />\n        <Route\n          path=\"/active\"\n          element={<TodoList filter={FilterValues.Active} />}\n        />\n        <Route\n          path=\"/completed\"\n          element={<TodoList filter={FilterValues.Completed} />}\n        />\n      </Routes>\n      <Footer />\n    </section>\n  );\n};\n\nexport default App;\n\n```\n\n\n\n"
+    },
+    {
+        "role": "user",
+        "content": "Failed to parse JSON command with error: Expecting value: line 1 column 1 (char 0). \n            Ensure that you respond with valid JSON command. \n            Return only valid JSON without any comments. \n            You should NEVER use markdown to wrap JSON commands."
+    },
+    {
+        "role": "assistant",
+        "content": "{\"command\": \"write-file\", \"file_path\": \"./src/components/App.tsx\", \"content\": \"```tsx\\nimport React, { useState, useEffect } from 'react';\\nimport { useAppDispatch } from '../store/hooks';\\nimport { addTodo } from '../store/todos/todosSlice';\\nimport TodoList from './TodoList';\\nimport Footer from './Footer';\\nimport { Routes, Route, useLocation } from 'react-router-dom';\\nimport { FilterValues } from '../types';\\n\\nconst App: React.FC = () => {\\n  const [newTodoText, setNewTodoText] = useState('');\\n  const dispatch = useAppDispatch();\\n  const location = useLocation();\\n\\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\\n    setNewTodoText(e.target.value);\\n  };\\n\\n  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {\\n    if (e.key === 'Enter' && newTodoText.trim() !== '') {\\n      dispatch(addTodo(newTodoText.trim()));\\n      setNewTodoText('');\\n    }\\n  };\\n\\n  useEffect(() => {\\n    setNewTodoText('');\\n  }, [location]);\\n\\n  return (\\n    <section className=\\\"todoapp\\\">\\n      <header className=\\\"header\\\">\\n        <h1>todos</h1>\\n        <input\\n          className=\\\"new-todo\\\"\\n          placeholder=\\\"What needs to be done?\\\"\\n          autoFocus\\n          value={newTodoText}\\n          onChange={handleInputChange}\\n          onKeyDown={handleKeyDown}\\n        />\\n      </header>\\n      <Routes>\\n        <Route path=\\\"/\\\" element={<TodoList filter={FilterValues.All} />} />\\n        <Route\\n          path=\\\"/active\\\"\\n          element={<TodoList filter={FilterValues.Active} />}\\n        />\\n        <Route\\n          path=\\\"/completed\\\"\\n          element={<TodoList filter={FilterValues.Completed} />}\\n        />\\n      </Routes>\\n      <Footer />\\n    </section>\\n  );\\n};\\n\\nexport default App;\\n\\n```\"}"
+    }
+]

@@ -1,0 +1,14 @@
+<div class="container">
+  <h2>Join PodBaby today.</h2>
+  <hr />
+  <p class="lead">
+    As a member you can subscribe to podcast feeds and keep track of your favorite episodes.
+  </p>
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <app-form-group [control]="signupForm.controls['name']" placeholder="Name"></app-form-group>
+    <app-form-group [control]="signupForm.controls['email']" placeholder="Email address"></app-form-group>
+    <app-form-group [control]="signupForm.controls['password']" placeholder="Password"></app-form-group>
+    <button type="submit" class="btn btn-primary" [disabled]="submitting$ | async">Signup</button>
+  </form>
+  <p><a routerLink="/login/">Already a member? Log in here.</a></p>
+</div>

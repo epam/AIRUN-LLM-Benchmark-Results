@@ -1,0 +1,76 @@
+<div class="panel">
+  <div class="text-center">
+    <h4>
+      <a *ngIf="!showExpanded" [routerLink]="podcastUrl">{{ podcast.title }}</a>
+      <span *ngIf="showExpanded">{{ podcast.title }}</span>
+    </h4>
+    <div *ngIf="isLoggedIn && podcast.lastPlayedAt">
+      <h5>
+        <span class="label label-success">
+          Listened {{ formatListenDate(podcast.lastPlayedAt) }}
+        </span>
+      </h5>
+    </div>
+    <div *ngIf="showImage">
+      <div class="thumbnail">
+        <div class="caption text-center">
+          <h5><a [routerLink]="channelUrl">{{ podcast.name }}</a></h5>
+        </div>
+        <a [routerLink]="channelUrl">
+          <app-image
+            [src]="podcast.image"
+            [errSrc]="/static/podcast.png"
+            [imgProps]="{ height: 60, width: 60, alt: podcast.name }"
+          ></app-image>
+        </a>
+      </div>
+    </div>
+    <h5 *ngIf="!showImage"><a [routerLink]="channelUrl">{{ podcast.name }}</a></h5>
+  </div>
+  <div style="padding: 10px;">
+    <small>
+      <time [dateTime]="podcast.pubDate">{{ formatPubDate(podcast.pubDate) }}</time>&nbsp;
+      <a *ngIf="podcast.source" [href]="podcast.source" target="_blank">Source</a>
+    </small>
+    <div class="btn-group pull-right">
+      <button
+        type="button"
+        title="{{ podcast.isPlaying ? 'Stop' : 'Play' }}"
+        (click)="togglePlayer(podcast)"
+      >
+        <app-icon [icon]="podcast.isPlaying ? 'stop' : 'play'"></app-icon>
+      </button>
+      <button
+        type="button"
+        title="Download this podcast"
+        class="btn btn-default"
+        [download]="podcast.enclosureUrl"
+      >
+        <app-icon icon="download"></app-icon>
+      </button>
+      <button
+        *ngIf="isLoggedIn"
+        type="button"
+        title="{{ podcast.isBookmarked ? 'Remove bookmark' : 'Add to bookmarks' }}"
+        (click)="toggleBookmark(podcast)"
+      >
+        <app-icon [icon]="podcast.isBookmarked ? 'bookmark' : 'bookmark-o'"></app-icon>
+      </button>
+    </div>
+  </div>
+  <button
+    *ngIf="!showExpanded"
+    type="button"
+    class="form-control"
+    title="{{ podcast.isShowDetail ? 'Hide details' : 'Show details' }}"
+    (click)="toggleDetail(podcast)"
+  >
+    <app-icon [icon]="podcast.isShowDetail ? 'chevron-up' : 'chevron-down'"></app-icon>
+  </button>
+  <p
+    *ngIf="description && (podcast.isShowDetail || showExpanded)"
+    [innerHTML]="description"
+    class="lead"
+    [ngClass]="{ 'text-center': true }"
+  ></p>
+</div>

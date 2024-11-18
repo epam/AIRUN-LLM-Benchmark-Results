@@ -1,0 +1,503 @@
+{
+  "title": "context exp update react",
+  "description": "",
+  "parameters": {
+    "groundingPromptConfig": {
+      "disabled": true,
+      "groundingConfig": {
+        "sources": [
+          {
+            "type": "VERTEX_AI_SEARCH"
+          }
+        ]
+      }
+    },
+    "stopSequences": [],
+    "temperature": 1,
+    "tokenLimits": 8192,
+    "topP": 0.95
+  },
+  "systemInstruction": {
+    "parts": [
+      {
+        "text": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks."
+      }
+    ]
+  },
+  "type": "chat",
+  "examples": [],
+  "messages": [
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "Your task is to translate outdated React app code to modern version of React. You may replace old implementations with new technologies and libraries.\\nApplication is composed of the following files:\\napp.tsx\\nconstants.ts\\nfooter.tsx\\ntodoItem.tsx\\ntodoModel.ts\\nutils.ts\\n\\nYour task is to request content of each file and analyze its implementation. Request files one by one.\\nYou should ask for files content by the command: \\\"Give me the content of <file.extenstion>\\\"\\n\\nAfter getting and analyzing of all file's content - think thoroughly and *return only new file structure* of updated React application in a form of list. After you return the file structure of the updated application, I will request you for each file by its number in the list\\nWhile updating application - follow next instructions:\\n- Use the following libraries: TypeScript, Redux Toolkit with createSlice, and nanoid.\\n- Split the code into separate components.\\n- Optimize the code where possible.\\n- The converted code should not contain any TODOs.\\n- Return the translated code as markdown code snippets.\\n- Simply return the codebase without additional comments or explanations on how to convert it.\\n\\nExample of response where number is an alias for file:\\n1 - ./App.tsx\\n2 - ./constants.ts\\n3 - ..\\n..\\n\\nDo not add any comments and follow the instructions precisely.\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of app.tsx \n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "declare var Router;\\nimport * as React from \\\"react\\\";\\nimport * as ReactDOM from \\\"react-dom\\\";\\nimport { TodoModel } from \\\"./todoModel\\\";\\nimport { TodoFooter } from \\\"./footer\\\";\\nimport { TodoItem } from \\\"./todoItem\\\";\\nimport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY } from \\\"./constants\\\";\\n\\nclass TodoApp extends React.Component<IAppProps, IAppState> {\\n\\n  public state : IAppState;\\n\\n  constructor(props : IAppProps) {\\n    super(props);\\n    this.state = {\\n      nowShowing: ALL_TODOS,\\n      editing: null\\n    };\\n  }\\n\\n  public componentDidMount() {\\n    var setState = this.setState;\\n    var router = Router({\\n      '/': setState.bind(this, {nowShowing: ALL_TODOS}),\\n      '/active': setState.bind(this, {nowShowing: ACTIVE_TODOS}),\\n      '/completed': setState.bind(this, {nowShowing: COMPLETED_TODOS})\\n    });\\n    router.init('/');\\n  }\\n\\n  public handleNewTodoKeyDown(event : React.KeyboardEvent) {\\n    if (event.keyCode !== ENTER_KEY) {\\n      return;\\n    }\\n\\n    event.preventDefault();\\n\\n    var val = (ReactDOM.findDOMNode(this.refs[\\\"newField\\\"]) as HTMLInputElement).value.trim();\\n\\n    if (val) {\\n      this.props.model.addTodo(val);\\n      (ReactDOM.findDOMNode(this.refs[\\\"newField\\\"]) as HTMLInputElement).value = '';\\n    }\\n  }\\n\\n  public toggleAll(event : React.FormEvent) {\\n    var target : any = event.target;\\n    var checked = target.checked;\\n    this.props.model.toggleAll(checked);\\n  }\\n\\n  public toggle(todoToToggle : ITodo) {\\n    this.props.model.toggle(todoToToggle);\\n  }\\n\\n  public destroy(todo : ITodo) {\\n    this.props.model.destroy(todo);\\n  }\\n\\n  public edit(todo : ITodo) {\\n    this.setState({editing: todo.id});\\n  }\\n\\n  public save(todoToSave : ITodo, text : String) {\\n    this.props.model.save(todoToSave, text);\\n    this.setState({editing: null});\\n  }\\n\\n  public cancel() {\\n    this.setState({editing: null});\\n  }\\n\\n  public clearCompleted() {\\n    this.props.model.clearCompleted();\\n  }\\n\\n  public render() {\\n    var footer;\\n    var main;\\n    const todos = this.props.model.todos;\\n\\n    var shownTodos = todos.filter((todo) => {\\n      switch (this.state.nowShowing) {\\n      case ACTIVE_TODOS:\\n        return !todo.completed;\\n      case COMPLETED_TODOS:\\n        return todo.completed;\\n      default:\\n        return true;\\n      }\\n    });\\n\\n    var todoItems = shownTodos.map((todo) => {\\n      return (\\n        <TodoItem\\n          key={todo.id}\\n          todo={todo}\\n          onToggle={this.toggle.bind(this, todo)}\\n          onDestroy={this.destroy.bind(this, todo)}\\n          onEdit={this.edit.bind(this, todo)}\\n          editing={this.state.editing === todo.id}\\n          onSave={this.save.bind(this, todo)}\\n          onCancel={ e => this.cancel() }\\n        />\\n      );\\n    });\\n\\n    // Note: It's usually better to use immutable data structures since they're\\n    // easier to reason about and React works very well with them. That's why\\n    // we use map(), filter() and reduce() everywhere instead of mutating the\\n    // array or todo items themselves.\\n    var activeTodoCount = todos.reduce(function (accum, todo) {\\n      return todo.completed ? accum : accum + 1;\\n    }, 0);\\n\\n    var completedCount = todos.length - activeTodoCount;\\n\\n    if (activeTodoCount || completedCount) {\\n      footer =\\n        <TodoFooter\\n          count={activeTodoCount}\\n          completedCount={completedCount}\\n          nowShowing={this.state.nowShowing}\\n          onClearCompleted={ e=> this.clearCompleted() }\\n        />;\\n    }\\n\\n    if (todos.length) {\\n      main = (\\n        <section className=\\\"main\\\">\\n          <input\\n            id=\\\"toggle-all\\\"\\n            className=\\\"toggle-all\\\"\\n            type=\\\"checkbox\\\"\\n            onChange={ e => this.toggleAll(e) }\\n            checked={activeTodoCount === 0}\\n          />\\n          <label\\n            htmlFor=\\\"toggle-all\\\"\\n          >\\n            Mark all as complete\\n          </label>\\n          <ul className=\\\"todo-list\\\">\\n            {todoItems}\\n          </ul>\\n        </section>\\n      );\\n    }\\n\\n    return (\\n      <div>\\n        <header className=\\\"header\\\">\\n          <h1>todos</h1>\\n          <input\\n            ref=\\\"newField\\\"\\n            className=\\\"new-todo\\\"\\n            placeholder=\\\"What needs to be done?\\\"\\n            onKeyDown={ e => this.handleNewTodoKeyDown(e) }\\n            autoFocus={true}\\n          />\\n        </header>\\n        {main}\\n        {footer}\\n      </div>\\n    );\\n  }\\n}\\n\\nvar model = new TodoModel('react-todos');\\n\\nfunction render() {\\n  ReactDOM.render(\\n    <TodoApp model={model}/>,\\n    document.getElementsByClassName('todoapp')[0]\\n  );\\n}\\n\\nmodel.subscribe(render);\\nrender();\\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of constants.ts \n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "const ALL_TODOS = 'all';\\nconst ACTIVE_TODOS = 'active';\\nconst COMPLETED_TODOS = 'completed';\\nconst ENTER_KEY = 13;\\nconst ESCAPE_KEY = 27;\\nexport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY, ESCAPE_KEY };\\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of footer.tsx \n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "import * as classNames from \\\"classnames\\\";\\nimport * as React from \\\"react\\\";\\nimport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS } from \\\"./constants\\\";\\nimport { Utils } from \\\"./utils\\\";\\n\\nclass TodoFooter extends React.Component<ITodoFooterProps, {}> {\\n\\n  public render() {\\n    var activeTodoWord = Utils.pluralize(this.props.count, 'item');\\n    var clearButton = null;\\n\\n    if (this.props.completedCount > 0) {\\n      clearButton = (\\n        <button\\n          className=\\\"clear-completed\\\"\\n          onClick={this.props.onClearCompleted}>\\n          Clear completed\\n        </button>\\n      );\\n    }\\n\\n    const nowShowing = this.props.nowShowing;\\n    return (\\n      <footer className=\\\"footer\\\">\\n        <span className=\\\"todo-count\\\">\\n          <strong>{this.props.count}</strong> {activeTodoWord} left\\n        </span>\\n        <ul className=\\\"filters\\\">\\n          <li>\\n            <a\\n              href=\\\"#/\\\"\\n              className={classNames({selected: nowShowing === ALL_TODOS})}>\\n                All\\n            </a>\\n          </li>\\n          {' '}\\n          <li>\\n            <a\\n              href=\\\"#/active\\\"\\n              className={classNames({selected: nowShowing === ACTIVE_TODOS})}>\\n                Active\\n            </a>\\n          </li>\\n          {' '}\\n          <li>\\n            <a\\n              href=\\\"#/completed\\\"\\n              className={classNames({selected: nowShowing === COMPLETED_TODOS})}>\\n                Completed\\n            </a>\\n          </li>\\n        </ul>\\n        {clearButton}\\n      </footer>\\n    );\\n  }\\n}\\n\\nexport { TodoFooter };\\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of todoItem.tsx \n\n\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "import * as classNames from \\\"classnames\\\";\\nimport * as React from \\\"react\\\";\\nimport * as ReactDOM from \\\"react-dom\\\";\\nimport { ENTER_KEY, ESCAPE_KEY } from \\\"./constants\\\";\\n\\nclass TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {\\n\\n  public state : ITodoItemState;\\n\\n  constructor(props : ITodoItemProps){\\n    super(props);\\n    this.state = { editText: this.props.todo.title };\\n  }\\n\\n  public handleSubmit(event : React.FormEvent) {\\n    var val = this.state.editText.trim();\\n    if (val) {\\n      this.props.onSave(val);\\n      this.setState({editText: val});\\n    } else {\\n      this.props.onDestroy();\\n    }\\n  }\\n\\n  public handleEdit() {\\n    this.props.onEdit();\\n    this.setState({editText: this.props.todo.title});\\n  }\\n\\n  public handleKeyDown(event : React.KeyboardEvent) {\\n    if (event.keyCode === ESCAPE_KEY) {\\n      this.setState({editText: this.props.todo.title});\\n      this.props.onCancel(event);\\n    } else if (event.keyCode === ENTER_KEY) {\\n      this.handleSubmit(event);\\n    }\\n  }\\n\\n  public handleChange(event : React.FormEvent) {\\n    var input : any = event.target;\\n    this.setState({ editText : input.value });\\n  }\\n\\n  /**\\n   * This is a completely optional performance enhancement that you can\\n   * implement on any React component. If you were to delete this method\\n   * the app would still work correctly (and still be very performant!), we\\n   * just use it as an example of how little code it takes to get an order\\n   * of magnitude performance improvement.\\n   */\\n  public shouldComponentUpdate(nextProps : ITodoItemProps, nextState : ITodoItemState) {\\n    return (\\n      nextProps.todo !== this.props.todo ||\\n      nextProps.editing !== this.props.editing ||\\n      nextState.editText !== this.state.editText\\n    );\\n  }\\n\\n  /**\\n   * Safely manipulate the DOM after updating the state when invoking\\n   * `this.props.onEdit()` in the `handleEdit` method above.\\n   * For more info refer to notes at https://facebook.github.io/react/docs/component-api.html#setstate\\n   * and https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate\\n   */\\n  public componentDidUpdate(prevProps : ITodoItemProps) {\\n    if (!prevProps.editing && this.props.editing) {\\n      var node = (ReactDOM.findDOMNode(this.refs[\\\"editField\\\"]) as HTMLInputElement);\\n      node.focus();\\n      node.setSelectionRange(node.value.length, node.value.length);\\n    }\\n  }\\n\\n  public render() {\\n    return (\\n      <li className={classNames({\\n        completed: this.props.todo.completed,\\n        editing: this.props.editing\\n      })}>\\n        <div className=\\\"view\\\">\\n          <input\\n            className=\\\"toggle\\\"\\n            type=\\\"checkbox\\\"\\n            checked={this.props.todo.completed}\\n            onChange={this.props.onToggle}\\n          />\\n          <label onDoubleClick={ e => this.handleEdit() }>\\n            {this.props.todo.title}\\n          </label>\\n          <button className=\\\"destroy\\\" onClick={this.props.onDestroy} />\\n        </div>\\n        <input\\n          ref=\\\"editField\\\"\\n          className=\\\"edit\\\"\\n          value={this.state.editText}\\n          onBlur={ e => this.handleSubmit(e) }\\n          onChange={ e => this.handleChange(e) }\\n          onKeyDown={ e => this.handleKeyDown(e) }\\n        />\\n      </li>\\n    );\\n  }\\n}\\n\\nexport { TodoItem };\\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of todoModel.ts \n\n\n\n\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "import { Utils } from \\\"./utils\\\";\\nclass TodoModel implements ITodoModel {\\n  public key : string;\\n  public todos : Array<ITodo>;\\n  public onChanges : Array<any>;\\n\\n  constructor(key) {\\n    this.key = key;\\n    this.todos = Utils.store(key);\\n    this.onChanges = [];\\n  }\\n\\n  public subscribe(onChange) {\\n    this.onChanges.push(onChange);\\n  }\\n\\n  public inform() {\\n    Utils.store(this.key, this.todos);\\n    this.onChanges.forEach(function (cb) { cb(); });\\n  }\\n\\n  public addTodo(title : string) {\\n    this.todos = this.todos.concat({\\n      id: Utils.uuid(),\\n      title: title,\\n      completed: false\\n    });\\n\\n    this.inform();\\n  }\\n\\n  public toggleAll(checked : Boolean) {\\n    // Note: It's usually better to use immutable data structures since they're\\n    // easier to reason about and React works very well with them. That's why\\n    // we use map(), filter() and reduce() everywhere instead of mutating the\\n    // array or todo items themselves.\\n    this.todos = this.todos.map<ITodo>((todo : ITodo) => {\\n      return Utils.extend({}, todo, {completed: checked});\\n    });\\n\\n    this.inform();\\n  }\\n\\n  public toggle(todoToToggle : ITodo) {\\n    this.todos = this.todos.map<ITodo>((todo : ITodo) => {\\n      return todo !== todoToToggle ?\\n        todo :\\n        Utils.extend({}, todo, {completed: !todo.completed});\\n    });\\n\\n    this.inform();\\n  }\\n\\n  public destroy(todo : ITodo) {\\n    this.todos = this.todos.filter(function (candidate) {\\n      return candidate !== todo;\\n    });\\n\\n    this.inform();\\n  }\\n\\n  public save(todoToSave : ITodo, text : string) {\\n    this.todos = this.todos.map(function (todo) {\\n      return todo !== todoToSave ? todo : Utils.extend({}, todo, {title: text});\\n    });\\n\\n    this.inform();\\n  }\\n\\n  public clearCompleted() {\\n    this.todos = this.todos.filter(function (todo) {\\n      return !todo.completed;\\n    });\\n\\n    this.inform();\\n  }\\n}\\n\\nexport { TodoModel };\\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of utils.ts \n\n\n\n\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "class Utils {\\n  public static uuid() : string {\\n    var i, random;\\n    var uuid = '';\\n\\n    for (i = 0; i < 32; i++) {\\n      random = Math.random() * 16 | 0;\\n      if (i === 8 || i === 12 || i === 16 || i === 20) {\\n        uuid += '-';\\n      }\\n      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))\\n        .toString(16);\\n    }\\n\\n    return uuid;\\n  }\\n\\n  public static pluralize(count: number, word: string) {\\n    return count === 1 ? word : word + 's';\\n  }\\n\\n  public static store(namespace : string, data? : any) {\\n    if (data) {\\n      return localStorage.setItem(namespace, JSON.stringify(data));\\n    }\\n\\n    var store = localStorage.getItem(namespace);\\n    return (store && JSON.parse(store)) || [];\\n  }\\n\\n  public static extend(...objs : any[]) : any {\\n    var newObj = {};\\n    for (var i = 0; i < objs.length; i++) {\\n      var obj = objs[i];\\n      for (var key in obj) {\\n        if (obj.hasOwnProperty(key)) {\\n          newObj[key] = obj[key];\\n        }\\n      }\\n    }\\n    return newObj;\\n  }\\n}\\n\\nexport { Utils };\\n\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "1 - ./App.tsx\n2 - ./components/Footer.tsx\n3 - ./components/TodoItem.tsx\n4 - ./features/todos/todosSlice.ts\n5 - ./constants.ts\n6 - ./app/store.ts\n7 - ./components/TodoList.tsx\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "1\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React from 'react';\nimport { useSelector, useDispatch } from 'react-redux';\nimport { addTodo, toggleAll, clearCompleted } from '../features/todos/todosSlice';\nimport { selectAllTodos } from '../features/todos/todosSelectors';\nimport TodoList from './TodoList';\nimport Footer from './Footer';\n\nconst App: React.FC = () => {\n  const dispatch = useDispatch();\n  const todos = useSelector(selectAllTodos);\n\n  const handleNewTodoKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {\n    if (event.key !== 'Enter') {\n      return;\n    }\n\n    event.preventDefault();\n\n    const val = event.currentTarget.value.trim();\n\n    if (val) {\n      dispatch(addTodo(val));\n      event.currentTarget.value = '';\n    }\n  };\n\n  const handleToggleAll = (event: React.ChangeEvent<HTMLInputElement>) => {\n    dispatch(toggleAll(event.target.checked));\n  };\n\n  const handleClearCompleted = () => {\n    dispatch(clearCompleted());\n  };\n\n  return (\n    <div>\n      <header className=\"header\">\n        <h1>todos</h1>\n        <input\n          className=\"new-todo\"\n          placeholder=\"What needs to be done?\"\n          onKeyDown={handleNewTodoKeyDown}\n          autoFocus\n        />\n      </header>\n      {todos.length > 0 && (\n        <section className=\"main\">\n          <input\n            id=\"toggle-all\"\n            className=\"toggle-all\"\n            type=\"checkbox\"\n            onChange={handleToggleAll}\n            checked={todos.every((todo) => todo.completed)}\n          />\n          <label htmlFor=\"toggle-all\">Mark all as complete</label>\n          <TodoList />\n        </section>\n      )}\n      {(todos.some((todo) => todo.completed) || todos.length > 0) && (\n        <Footer onClearCompleted={handleClearCompleted} />\n      )}\n    </div>\n  );\n};\n\nexport default App;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "2\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React from 'react';\nimport { useSelector, useDispatch } from 'react-redux';\nimport { VisibilityFilters, setVisibilityFilter } from '../features/todos/todosSlice';\nimport { selectCompletedCount, selectActiveCount } from '../features/todos/todosSelectors';\nimport classNames from 'classnames';\n\nconst Footer: React.FC = () => {\n  const dispatch = useDispatch();\n  const activeCount = useSelector(selectActiveCount);\n  const completedCount = useSelector(selectCompletedCount);\n  const currentFilter = useSelector((state) => state.todos.visibilityFilter);\n\n  const handleClearCompleted = () => {\n    dispatch(setVisibilityFilter(VisibilityFilters.SHOW_ALL));\n  };\n\n  return (\n    <footer className=\"footer\">\n      <span className=\"todo-count\">\n        <strong>{activeCount}</strong> item{activeCount > 1 && 's'} left\n      </span>\n      <ul className=\"filters\">\n        {[VisibilityFilters.SHOW_ALL, VisibilityFilters.SHOW_ACTIVE, VisibilityFilters.SHOW_COMPLETED].map(\n          (filter) => (\n            <li key={filter}>\n              <a\n                href={`#/${filter === VisibilityFilters.SHOW_ALL ? '' : filter}`}\n                className={classNames({ selected: currentFilter === filter })}\n                onClick={() => dispatch(setVisibilityFilter(filter))}\n              >\n                {filter}\n              </a>\n            </li>\n          )\n        )}\n      </ul>\n      {completedCount > 0 && (\n        <button className=\"clear-completed\" onClick={handleClearCompleted}>\n          Clear completed\n        </button>\n      )}\n    </footer>\n  );\n};\n\nexport default Footer;\n\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "3\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React, { useState, useRef, useEffect } from 'react';\nimport { useSelector, useDispatch } from 'react-redux';\nimport { toggleTodo, editTodo, deleteTodo } from '../features/todos/todosSlice';\nimport classNames from 'classnames';\n\ninterface TodoItemProps {\n  id: string;\n}\n\nconst TodoItem: React.FC<TodoItemProps> = ({ id }) => {\n  const dispatch = useDispatch();\n  const todo = useSelector((state) => state.todos.byId[id]);\n  const [editing, setEditing] = useState(false);\n  const [editText, setEditText] = useState(todo.title);\n  const editFieldRef = useRef<HTMLInputElement>(null);\n\n  useEffect(() => {\n    if (editing && editFieldRef.current) {\n      editFieldRef.current.focus();\n      editFieldRef.current.setSelectionRange(\n        editFieldRef.current.value.length,\n        editFieldRef.current.value.length\n      );\n    }\n  }, [editing]);\n\n  const handleToggle = () => {\n    dispatch(toggleTodo(todo.id));\n  };\n\n  const handleEdit = () => {\n    setEditing(true);\n  };\n\n  const handleDestroy = () => {\n    dispatch(deleteTodo(todo.id));\n  };\n\n  const handleSubmit = (event: React.FormEvent) => {\n    event.preventDefault();\n    const val = editText.trim();\n    if (val) {\n      dispatch(editTodo({ id: todo.id, title: val }));\n      setEditing(false);\n    } else {\n      dispatch(deleteTodo(todo.id));\n    }\n  };\n\n  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {\n    if (event.key === 'Escape') {\n      setEditText(todo.title);\n      setEditing(false);\n    } else if (event.key === 'Enter') {\n      handleSubmit(event);\n    }\n  };\n\n  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {\n    setEditText(event.target.value);\n  };\n\n  return (\n    <li\n      className={classNames({\n        completed: todo.completed,\n        editing: editing,\n      })}\n    >\n      <div className=\"view\">\n        <input\n          className=\"toggle\"\n          type=\"checkbox\"\n          checked={todo.completed}\n          onChange={handleToggle}\n        />\n        <label onDoubleClick={handleEdit}>{todo.title}</label>\n        <button className=\"destroy\" onClick={handleDestroy} />\n      </div>\n      {editing && (\n        <form onSubmit={handleSubmit}>\n          <input\n            ref={editFieldRef}\n            className=\"edit\"\n            value={editText}\n            onBlur={handleSubmit}\n            onChange={handleChange}\n            onKeyDown={handleKeyDown}\n          />\n        </form>\n      )}\n    </li>\n  );\n};\n\nexport default TodoItem;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "4\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```typescript\nimport { createSlice, PayloadAction } from '@reduxjs/toolkit';\nimport { nanoid } from 'nanoid';\n\nexport interface Todo {\n  id: string;\n  title: string;\n  completed: boolean;\n}\n\nexport const VisibilityFilters = {\n  SHOW_ALL: 'SHOW_ALL',\n  SHOW_COMPLETED: 'SHOW_COMPLETED',\n  SHOW_ACTIVE: 'SHOW_ACTIVE',\n};\n\ninterface TodosState {\n  byId: Record<string, Todo>;\n  allIds: string[];\n  visibilityFilter: keyof typeof VisibilityFilters;\n}\n\nconst initialState: TodosState = {\n  byId: {},\n  allIds: [],\n  visibilityFilter: VisibilityFilters.SHOW_ALL,\n};\n\nconst todosSlice = createSlice({\n  name: 'todos',\n  initialState,\n  reducers: {\n    addTodo: {\n      reducer: (state, action: PayloadAction<Todo>) => {\n        state.byId[action.payload.id] = action.payload;\n        state.allIds.push(action.payload.id);\n      },\n      prepare: (title: string) => ({\n        payload: {\n          id: nanoid(),\n          title,\n          completed: false,\n        },\n      }),\n    },\n    toggleTodo(state, action: PayloadAction<string>) {\n      const id = action.payload;\n      state.byId[id].completed = !state.byId[id].completed;\n    },\n    editTodo(state, action: PayloadAction<{ id: string; title: string }>) {\n      const { id, title } = action.payload;\n      state.byId[id].title = title;\n    },\n    deleteTodo(state, action: PayloadAction<string>) {\n      const id = action.payload;\n      delete state.byId[id];\n      state.allIds = state.allIds.filter((todoId) => todoId !== id);\n    },\n    toggleAll(state, action: PayloadAction<boolean>) {\n      state.allIds.forEach((id) => {\n        state.byId[id].completed = action.payload;\n      });\n    },\n    clearCompleted(state) {\n      const completedIds = state.allIds.filter((id) => state.byId[id].completed);\n      completedIds.forEach((id) => {\n        delete state.byId[id];\n      });\n      state.allIds = state.allIds.filter((id) => !state.byId[id].completed);\n    },\n    setVisibilityFilter(\n      state,\n      action: PayloadAction<keyof typeof VisibilityFilters>\n    ) {\n      state.visibilityFilter = action.payload;\n    },\n  },\n});\n\nexport const {\n  addTodo,\n  toggleTodo,\n  editTodo,\n  deleteTodo,\n  toggleAll,\n  clearCompleted,\n  setVisibilityFilter,\n} = todosSlice.actions;\n\nexport default todosSlice.reducer;\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "5\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```typescript\nexport const VisibilityFilters = {\n  SHOW_ALL: 'SHOW_ALL',\n  SHOW_COMPLETED: 'SHOW_COMPLETED',\n  SHOW_ACTIVE: 'SHOW_ACTIVE',\n};\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "6\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```typescript\nimport { configureStore } from '@reduxjs/toolkit';\nimport todosReducer from '../features/todos/todosSlice';\n\nexport const store = configureStore({\n  reducer: {\n    todos: todosReducer,\n  },\n});\n\nexport type RootState = ReturnType<typeof store.getState>;\nexport type AppDispatch = typeof store.dispatch;\n\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [
+          {
+            "startIndex": 120,
+            "endIndex": 305,
+            "license": "",
+            "url": "https://stackoverflow.com/questions/71514713/i-am-having-dependency-issues-installing-redujx-toolkit?rq=2",
+            "title": ""
+          },
+          {
+            "startIndex": 120,
+            "endIndex": 305,
+            "license": "",
+            "url": "https://stackoverflow.com/questions/71514713/i-am-having-dependency-issues-installing-redujx-toolkit?rq=2",
+            "title": ""
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://stackoverflow.com/questions/71514713/i-am-having-dependency-issues-installing-redujx-toolkit?rq=2",
+            "title": "",
+            "index": 1
+          }
+        ]
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "7\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React from 'react';\nimport { useSelector } from 'react-redux';\nimport TodoItem from './TodoItem';\nimport { selectVisibleTodos } from '../features/todos/todosSelectors';\n\nconst TodoList: React.FC = () => {\n  const todos = useSelector(selectVisibleTodos);\n\n  return (\n    <ul className=\"todo-list\">\n      {todos.map((todo) => (\n        <TodoItem key={todo.id} id={todo.id} />\n      ))}\n    </ul>\n  );\n};\n\nexport default TodoList;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "provide todosSelectors file\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```typescript\nimport { RootState } from '../app/store';\nimport { VisibilityFilters } from './todosSlice';\n\nexport const selectAllTodos = (state: RootState) => state.todos.allIds.map((id) => state.todos.byId[id]);\n\nexport const selectVisibleTodos = (state: RootState) => {\n  const allTodos = selectAllTodos(state);\n  switch (state.todos.visibilityFilter) {\n    case VisibilityFilters.SHOW_ALL:\n      return allTodos;\n    case VisibilityFilters.SHOW_COMPLETED:\n      return allTodos.filter((todo) => todo.completed);\n    case VisibilityFilters.SHOW_ACTIVE:\n      return allTodos.filter((todo) => !todo.completed);\n    default:\n      return allTodos;\n  }\n};\n\nexport const selectActiveCount = (state: RootState) =>\n  selectAllTodos(state).filter((todo) => !todo.completed).length;\n\nexport const selectCompletedCount = (state: RootState) =>\n  selectAllTodos(state).filter((todo) => todo.completed).length;\n\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    }
+  ],
+  "model": "gemini-1.5-pro-preview-0514"
+}

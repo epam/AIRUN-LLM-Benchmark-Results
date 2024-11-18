@@ -1,0 +1,22 @@
+<div *ngIf="isLoading$ | async">
+  <app-loading></app-loading>
+</div>
+<div *ngIf="podcasts$ | async as podcasts; else empty">
+  <app-pager [page]="page$ | async" (onSelectPage)="onSelectPage($event)"></app-pager>
+  <app-podcast-item
+    *ngFor="let podcast of podcasts"
+    [podcast]="podcast"
+    [searchQuery]="searchQuery$ | async"
+    [isLoggedIn]="isLoggedIn$ | async"
+    [showImage]="false"
+    [showChannel]="showChannel$ | async"
+    [showExpanded]="false"
+    (togglePlayer)="togglePlayer(podcast)"
+    (toggleBookmark)="toggleBookmark(podcast)"
+    (toggleDetail)="toggleDetail(podcast)"
+  ></app-podcast-item>
+  <app-pager [page]="page$ | async" (onSelectPage)="onSelectPage($event)"></app-pager>
+</div>
+<ng-template #empty>
+  <div class="lead">{{ ifEmpty }}</div>
+</ng-template>

@@ -1,0 +1,24 @@
+<nav *ngIf="page && onSelectPage && page.numPages > 1">
+  <ul class="pager">
+    <li [ngClass]="{ disabled: isFirstPage }">
+      <a href="#" (click)="handleFirstPage()">
+        <app-icon icon="fast-backward"></app-icon>
+      </a>
+    </li>
+    <li [ngClass]="{ disabled: isFirstPage }">
+      <a href="#" (click)="handlePreviousPage()">
+        <app-icon icon="backward"></app-icon>
+      </a>
+    </li>
+    <li [ngClass]="{ disabled: isLastPage }">
+      <a href="#" (click)="handleNextPage()">
+        <app-icon icon="forward"></app-icon>
+      </a>
+    </li>
+    <li [ngClass]="{ disabled: isLastPage }">
+      <a href="#" (click)="handleLastPage()">
+        <app-icon icon="fast-forward"></app-icon>
+      </a>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,133 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <i class="fas fa-headphones"></i> PodBaby
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="['/new']"
+            [routerLinkActive]="['active']"
+          >
+            <i class="fas fa-flash"></i> New episodes
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="['/browse']"
+            [routerLinkActive]="['active']"
+          >
+            <i class="fas fa-list"></i> Browse
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="['/search']"
+            [routerLinkActive]="['active']"
+          >
+            <i class="fas fa-search"></i> Search
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="['/recommendations']"
+            [routerLinkActive]="['active']"
+          >
+            <i class="fas fa-thumbs-up"></i> Recommended
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            (click)="openAddChannelForm()"
+            *ngIf="isLoggedIn"
+          >
+            <i class="fas fa-rss"></i> Add new feed
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item dropdown" *ngIf="isLoggedIn">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              [src]="gravatarUrl"
+              alt="Gravatar"
+              class="rounded-circle"
+              width="30"
+              height="30"
+            />
+            {{ name }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>
+              <a class="dropdown-item" [routerLink]="['/member/subscriptions']">
+                <i class="fas fa-folder"></i> Subscriptions
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" [routerLink]="['/member/bookmarks']">
+                <i class="fas fa-bookmark"></i> Bookmarks
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" [routerLink]="['/member/recent']">
+                <i class="fas fa-history"></i> Recent
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" [routerLink]="['/user']">
+                <i class="fas fa-cog"></i> Settings
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="logout()">
+                <i class="fas fa-sign-out"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a
+            class="nav-link"
+            [routerLink]="['/login']"
+            [routerLinkActive]="['active']"
+          >
+            <i class="fas fa-sign-in"></i> Login
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a
+            class="nav-link"
+            [routerLink]="['/signup']"
+            [routerLinkActive]="['active']"
+          >
+            <i class="fas fa-sign-in"></i> Signup
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

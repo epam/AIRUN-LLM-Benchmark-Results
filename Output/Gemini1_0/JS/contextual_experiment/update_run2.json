@@ -1,0 +1,385 @@
+{
+  "version": 5,
+  "history": [
+    {
+      "id": "conversations/3qHCxt7ydCCSU9xr1wWBC3VRKEfv77RMob3ywSCfCsv9pWzkTYLqvDFfPyCKuHZT1H/context exp. update React/gemini-pro__Your task is to translate outdated React app code to modern version of React  3",
+      "name": "Your task is to translate outdated React app code to modern version of React  3",
+      "model": {
+        "id": "gemini-pro"
+      },
+      "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+      "temperature": 0,
+      "folderId": "conversations/3qHCxt7ydCCSU9xr1wWBC3VRKEfv77RMob3ywSCfCsv9pWzkTYLqvDFfPyCKuHZT1H/context exp. update React",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Your task is to translate outdated React app code to modern version of React  using functional components and hooks.\nOutdated application is composed from the following files:\napp.tsx\nconstants.ts\nfooter.tsx\ntodoItem.tsx\ntodoModel.ts\nutils.ts\n\n\nYour task is to request content of each file on every steps. Do not ask all files in one step.\nYou should ask for file content by using the command: \"Give me the content of <file.extenstion>\"\n\nAfter all files content are requested write only the command \"Import is ended!\".",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Give me the content of app.tsx",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "e43483fb-8423-4c9f-8e77-e8a6a77da09f"
+        },
+        {
+          "role": "user",
+          "content": "declare var Router;\nimport * as React from \"react\";\nimport * as ReactDOM from \"react-dom\";\nimport { TodoModel } from \"./todoModel\";\nimport { TodoFooter } from \"./footer\";\nimport { TodoItem } from \"./todoItem\";\nimport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY } from \"./constants\";\n\nclass TodoApp extends React.Component<IAppProps, IAppState> {\n\n  public state : IAppState;\n\n  constructor(props : IAppProps) {\n    super(props);\n    this.state = {\n      nowShowing: ALL_TODOS,\n      editing: null\n    };\n  }\n\n  public componentDidMount() {\n    var setState = this.setState;\n    var router = Router({\n      '/': setState.bind(this, {nowShowing: ALL_TODOS}),\n      '/active': setState.bind(this, {nowShowing: ACTIVE_TODOS}),\n      '/completed': setState.bind(this, {nowShowing: COMPLETED_TODOS})\n    });\n    router.init('/');\n  }\n\n  public handleNewTodoKeyDown(event : React.KeyboardEvent) {\n    if (event.keyCode !== ENTER_KEY) {\n      return;\n    }\n\n    event.preventDefault();\n\n    var val = (ReactDOM.findDOMNode(this.refs[\"newField\"]) as HTMLInputElement).value.trim();\n\n    if (val) {\n      this.props.model.addTodo(val);\n      (ReactDOM.findDOMNode(this.refs[\"newField\"]) as HTMLInputElement).value = '';\n    }\n  }\n\n  public toggleAll(event : React.FormEvent) {\n    var target : any = event.target;\n    var checked = target.checked;\n    this.props.model.toggleAll(checked);\n  }\n\n  public toggle(todoToToggle : ITodo) {\n    this.props.model.toggle(todoToToggle);\n  }\n\n  public destroy(todo : ITodo) {\n    this.props.model.destroy(todo);\n  }\n\n  public edit(todo : ITodo) {\n    this.setState({editing: todo.id});\n  }\n\n  public save(todoToSave : ITodo, text : String) {\n    this.props.model.save(todoToSave, text);\n    this.setState({editing: null});\n  }\n\n  public cancel() {\n    this.setState({editing: null});\n  }\n\n  public clearCompleted() {\n    this.props.model.clearCompleted();\n  }\n\n  public render() {\n    var footer;\n    var main;\n    const todos = this.props.model.todos;\n\n    var shownTodos = todos.filter((todo) => {\n      switch (this.state.nowShowing) {\n      case ACTIVE_TODOS:\n        return !todo.completed;\n      case COMPLETED_TODOS:\n        return todo.completed;\n      default:\n        return true;\n      }\n    });\n\n    var todoItems = shownTodos.map((todo) => {\n      return (\n        <TodoItem\n          key={todo.id}\n          todo={todo}\n          onToggle={this.toggle.bind(this, todo)}\n          onDestroy={this.destroy.bind(this, todo)}\n          onEdit={this.edit.bind(this, todo)}\n          editing={this.state.editing === todo.id}\n          onSave={this.save.bind(this, todo)}\n          onCancel={ e => this.cancel() }\n        />\n      );\n    });\n\n    // Note: It's usually better to use immutable data structures since they're\n    // easier to reason about and React works very well with them. That's why\n    // we use map(), filter() and reduce() everywhere instead of mutating the\n    // array or todo items themselves.\n    var activeTodoCount = todos.reduce(function (accum, todo) {\n      return todo.completed ? accum : accum + 1;\n    }, 0);\n\n    var completedCount = todos.length - activeTodoCount;\n\n    if (activeTodoCount || completedCount) {\n      footer =\n        <TodoFooter\n          count={activeTodoCount}\n          completedCount={completedCount}\n          nowShowing={this.state.nowShowing}\n          onClearCompleted={ e=> this.clearCompleted() }\n        />;\n    }\n\n    if (todos.length) {\n      main = (\n        <section className=\"main\">\n          <input\n            id=\"toggle-all\"\n            className=\"toggle-all\"\n            type=\"checkbox\"\n            onChange={ e => this.toggleAll(e) }\n            checked={activeTodoCount === 0}\n          />\n          <label\n            htmlFor=\"toggle-all\"\n          >\n            Mark all as complete\n          </label>\n          <ul className=\"todo-list\">\n            {todoItems}\n          </ul>\n        </section>\n      );\n    }\n\n    return (\n      <div>\n        <header className=\"header\">\n          <h1>todos</h1>\n          <input\n            ref=\"newField\"\n            className=\"new-todo\"\n            placeholder=\"What needs to be done?\"\n            onKeyDown={ e => this.handleNewTodoKeyDown(e) }\n            autoFocus={true}\n          />\n        </header>\n        {main}\n        {footer}\n      </div>\n    );\n  }\n}\n\nvar model = new TodoModel('react-todos');\n\nfunction render() {\n  ReactDOM.render(\n    <TodoApp model={model}/>,\n    document.getElementsByClassName('todoapp')[0]\n  );\n}\n\nmodel.subscribe(render);\nrender();\n",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Give me the content of constants.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "896ca988-0a83-48b7-8781-a6312c489cb1"
+        },
+        {
+          "role": "user",
+          "content": "const ALL_TODOS = 'all';\nconst ACTIVE_TODOS = 'active';\nconst COMPLETED_TODOS = 'completed';\nconst ENTER_KEY = 13;\nconst ESCAPE_KEY = 27;\nexport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY, ESCAPE_KEY };\n",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Give me the content of footer.tsx",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "8ff10bd4-e781-4ac7-a64c-ae1ae662f4fb"
+        },
+        {
+          "role": "user",
+          "content": "import * as classNames from \"classnames\";\nimport * as React from \"react\";\nimport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS } from \"./constants\";\nimport { Utils } from \"./utils\";\n\nclass TodoFooter extends React.Component<ITodoFooterProps, {}> {\n\n  public render() {\n    var activeTodoWord = Utils.pluralize(this.props.count, 'item');\n    var clearButton = null;\n\n    if (this.props.completedCount > 0) {\n      clearButton = (\n        <button\n          className=\"clear-completed\"\n          onClick={this.props.onClearCompleted}>\n          Clear completed\n        </button>\n      );\n    }\n\n    const nowShowing = this.props.nowShowing;\n    return (\n      <footer className=\"footer\">\n        <span className=\"todo-count\">\n          <strong>{this.props.count}</strong> {activeTodoWord} left\n        </span>\n        <ul className=\"filters\">\n          <li>\n            <a\n              href=\"#/\"\n              className={classNames({selected: nowShowing === ALL_TODOS})}>\n                All\n            </a>\n          </li>\n          {' '}\n          <li>\n            <a\n              href=\"#/active\"\n              className={classNames({selected: nowShowing === ACTIVE_TODOS})}>\n                Active\n            </a>\n          </li>\n          {' '}\n          <li>\n            <a\n              href=\"#/completed\"\n              className={classNames({selected: nowShowing === COMPLETED_TODOS})}>\n                Completed\n            </a>\n          </li>\n        </ul>\n        {clearButton}\n      </footer>\n    );\n  }\n}\n\nexport { TodoFooter };\n",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Give me the content of todoItem.tsx",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "d25a48ba-20be-485f-a7c9-1f9f1666d70d"
+        },
+        {
+          "role": "user",
+          "content": "import * as classNames from \"classnames\";\nimport * as React from \"react\";\nimport * as ReactDOM from \"react-dom\";\nimport { ENTER_KEY, ESCAPE_KEY } from \"./constants\";\n\nclass TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {\n\n  public state : ITodoItemState;\n\n  constructor(props : ITodoItemProps){\n    super(props);\n    this.state = { editText: this.props.todo.title };\n  }\n\n  public handleSubmit(event : React.FormEvent) {\n    var val = this.state.editText.trim();\n    if (val) {\n      this.props.onSave(val);\n      this.setState({editText: val});\n    } else {\n      this.props.onDestroy();\n    }\n  }\n\n  public handleEdit() {\n    this.props.onEdit();\n    this.setState({editText: this.props.todo.title});\n  }\n\n  public handleKeyDown(event : React.KeyboardEvent) {\n    if (event.keyCode === ESCAPE_KEY) {\n      this.setState({editText: this.props.todo.title});\n      this.props.onCancel(event);\n    } else if (event.keyCode === ENTER_KEY) {\n      this.handleSubmit(event);\n    }\n  }\n\n  public handleChange(event : React.FormEvent) {\n    var input : any = event.target;\n    this.setState({ editText : input.value });\n  }\n\n  /**\n   * This is a completely optional performance enhancement that you can\n   * implement on any React component. If you were to delete this method\n   * the app would still work correctly (and still be very performant!), we\n   * just use it as an example of how little code it takes to get an order\n   * of magnitude performance improvement.\n   */\n  public shouldComponentUpdate(nextProps : ITodoItemProps, nextState : ITodoItemState) {\n    return (\n      nextProps.todo !== this.props.todo ||\n      nextProps.editing !== this.props.editing ||\n      nextState.editText !== this.state.editText\n    );\n  }\n\n  /**\n   * Safely manipulate the DOM after updating the state when invoking\n   * `this.props.onEdit()` in the `handleEdit` method above.\n   * For more info refer to notes at https://facebook.github.io/react/docs/component-api.html#setstate\n   * and https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate\n   */\n  public componentDidUpdate(prevProps : ITodoItemProps) {\n    if (!prevProps.editing && this.props.editing) {\n      var node = (ReactDOM.findDOMNode(this.refs[\"editField\"]) as HTMLInputElement);\n      node.focus();\n      node.setSelectionRange(node.value.length, node.value.length);\n    }\n  }\n\n  public render() {\n    return (\n      <li className={classNames({\n        completed: this.props.todo.completed,\n        editing: this.props.editing\n      })}>\n        <div className=\"view\">\n          <input\n            className=\"toggle\"\n            type=\"checkbox\"\n            checked={this.props.todo.completed}\n            onChange={this.props.onToggle}\n          />\n          <label onDoubleClick={ e => this.handleEdit() }>\n            {this.props.todo.title}\n          </label>\n          <button className=\"destroy\" onClick={this.props.onDestroy} />\n        </div>\n        <input\n          ref=\"editField\"\n          className=\"edit\"\n          value={this.state.editText}\n          onBlur={ e => this.handleSubmit(e) }\n          onChange={ e => this.handleChange(e) }\n          onKeyDown={ e => this.handleKeyDown(e) }\n        />\n      </li>\n    );\n  }\n}\n\nexport { TodoItem };\n",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Give me the content of todoModel.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "00bcd235-74dc-4678-8f47-ebb2999bb3c8"
+        },
+        {
+          "role": "user",
+          "content": "import { Utils } from \"./utils\";\nclass TodoModel implements ITodoModel {\n  public key : string;\n  public todos : Array<ITodo>;\n  public onChanges : Array<any>;\n\n  constructor(key) {\n    this.key = key;\n    this.todos = Utils.store(key);\n    this.onChanges = [];\n  }\n\n  public subscribe(onChange) {\n    this.onChanges.push(onChange);\n  }\n\n  public inform() {\n    Utils.store(this.key, this.todos);\n    this.onChanges.forEach(function (cb) { cb(); });\n  }\n\n  public addTodo(title : string) {\n    this.todos = this.todos.concat({\n      id: Utils.uuid(),\n      title: title,\n      completed: false\n    });\n\n    this.inform();\n  }\n\n  public toggleAll(checked : Boolean) {\n    // Note: It's usually better to use immutable data structures since they're\n    // easier to reason about and React works very well with them. That's why\n    // we use map(), filter() and reduce() everywhere instead of mutating the\n    // array or todo items themselves.\n    this.todos = this.todos.map<ITodo>((todo : ITodo) => {\n      return Utils.extend({}, todo, {completed: checked});\n    });\n\n    this.inform();\n  }\n\n  public toggle(todoToToggle : ITodo) {\n    this.todos = this.todos.map<ITodo>((todo : ITodo) => {\n      return todo !== todoToToggle ?\n        todo :\n        Utils.extend({}, todo, {completed: !todo.completed});\n    });\n\n    this.inform();\n  }\n\n  public destroy(todo : ITodo) {\n    this.todos = this.todos.filter(function (candidate) {\n      return candidate !== todo;\n    });\n\n    this.inform();\n  }\n\n  public save(todoToSave : ITodo, text : string) {\n    this.todos = this.todos.map(function (todo) {\n      return todo !== todoToSave ? todo : Utils.extend({}, todo, {title: text});\n    });\n\n    this.inform();\n  }\n\n  public clearCompleted() {\n    this.todos = this.todos.filter(function (todo) {\n      return !todo.completed;\n    });\n\n    this.inform();\n  }\n}\n\nexport { TodoModel };\n",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Give me the content of utils.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "6e35ce12-8d71-4d15-9ae9-21bf19f94ced"
+        },
+        {
+          "role": "user",
+          "content": "\nclass Utils {\n  public static uuid() : string {\n    var i, random;\n    var uuid = '';\n\n    for (i = 0; i < 32; i++) {\n      random = Math.random() * 16 | 0;\n      if (i === 8 || i === 12 || i === 16 || i === 20) {\n        uuid += '-';\n      }\n      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))\n        .toString(16);\n    }\n\n    return uuid;\n  }\n\n  public static pluralize(count: number, word: string) {\n    return count === 1 ? word : word + 's';\n  }\n\n  public static store(namespace : string, data? : any) {\n    if (data) {\n      return localStorage.setItem(namespace, JSON.stringify(data));\n    }\n\n    var store = localStorage.getItem(namespace);\n    return (store && JSON.parse(store)) || [];\n  }\n\n  public static extend(...objs : any[]) : any {\n    var newObj = {};\n    for (var i = 0; i < objs.length; i++) {\n      var obj = objs[i];\n      for (var key in obj) {\n        if (obj.hasOwnProperty(key)) {\n          newObj[key] = obj[key];\n        }\n      }\n    }\n    return newObj;\n  }\n}\n\nexport { Utils };\n",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "Import is ended!",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "99d40d48-f58e-4ecc-8a42-9b675f963137"
+        },
+        {
+          "role": "user",
+          "content": "Now make an analysis of implementation and think thoroughly and return the file structure of updated React application in a form of list as in the example below.\n\nExample:\n/src/App.tsx\n/src/utils/file.ts\n/...",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "/src/App.tsx\n/src/components/Footer.tsx\n/src/components/TodoItem.tsx\n/src/models/TodoModel.ts\n/src/utils/constants.ts\n/src/utils/utils.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "d58c7641-ca75-41ac-932c-4426f622b1dc"
+        },
+        {
+          "role": "user",
+          "content": "Give me the updated content of file /src/App.tsx\n\n\n/src/components/Footer.tsx /src/components/TodoItem.tsx /src/models/TodoModel.ts /src/utils/constants.ts /src/utils/utils.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "```tsx\nimport { useState } from \"react\";\nimport TodoFooter from \"./components/Footer\";\nimport TodoItem from \"./components/TodoItem\";\nimport { TodoModel } from \"./models/TodoModel\";\nimport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY } from \"./utils/constants\";\nimport { Utils } from \"./utils/utils\";\n\nconst App = () => {\n  const [todos, setTodos] = useState(new TodoModel(\"react-todos\").todos);\n  const [nowShowing, setNowShowing] = useState(ALL_TODOS);\n  const [editing, setEditing] = useState(null);\n\n  const handleNewTodoKeyDown = (event) => {\n    if (event.keyCode !== ENTER_KEY) {\n      return;\n    }\n\n    event.preventDefault();\n\n    const val = (document.getElementById(\"newField\") as HTMLInputElement).value.trim();\n\n    if (val) {\n      setTodos((prevTodos) => [...prevTodos, { id: Utils.uuid(), title: val, completed: false }]);\n      (document.getElementById(\"newField\") as HTMLInputElement).value = \"\";\n    }\n  };\n\n  const toggleAll = (event) => {\n    const target = event.target as HTMLInputElement;\n    const checked = target.checked;\n    setTodos((prevTodos) =>\n      prevTodos.map((todo) => ({ ...todo, completed: checked }))\n    );\n  };\n\n  const toggle = (todoToToggle) => {\n    setTodos((prevTodos) =>\n      prevTodos.map((todo) =>\n        todo !== todoToToggle ? todo : { ...todo, completed: !todo.completed }\n      )\n    );\n  };\n\n  const destroy = (todo) => {\n    setTodos((prevTodos) => prevTodos.filter((t) => t !== todo));\n  };\n\n  const edit = (todo) => {\n    setEditing(todo.id);\n  };\n\n  const save = (todoToSave, text) => {\n    setTodos((prevTodos) =>\n      prevTodos.map((todo) =>\n        todo !== todoToSave ? todo : { ...todo, title: text }\n      )\n    );\n    setEditing(null);\n  };\n\n  const cancel = () => {\n    setEditing(null);\n  };\n\n  const clearCompleted = () => {\n    setTodos((prevTodos) => prevTodos.filter((todo) => !todo.completed));\n  };\n\n  const shownTodos = todos.filter((todo) => {\n    switch (nowShowing) {\n      case ACTIVE_TODOS:\n        return !todo.completed;\n      case COMPLETED_TODOS:\n        return todo.completed;\n      default:\n        return true;\n    }\n  });\n\n  const todoItems = shownTodos.map((todo) => (\n    <TodoItem\n      key={todo.id}\n      todo={todo}\n      onToggle={() => toggle(todo)}\n      onDestroy={() => destroy(todo)}\n      onEdit={() => edit(todo)}\n      editing={editing === todo.id}\n      onSave={(text) => save(todo, text)}\n      onCancel={cancel}\n    />\n  ));\n\n  const activeTodoCount = todos.reduce((acc, todo) => (todo.completed ? acc : acc + 1), 0);\n\n  const completedCount = todos.length - activeTodoCount;\n\n  let footer;\n  let main;\n\n  if (activeTodoCount || completedCount) {\n    footer = (\n      <TodoFooter\n        count={activeTodoCount}\n        completedCount={completedCount}\n        nowShowing={nowShowing}\n        onClearCompleted={clearCompleted}\n      />\n    );\n  }\n\n  if (todos.length) {\n    main = (\n      <section className=\"main\">\n        <input\n          id=\"toggle-all\"\n          className=\"toggle-all\"\n          type=\"checkbox\"\n          onChange={toggleAll}\n          checked={activeTodoCount === 0}\n        />\n        <label htmlFor=\"toggle-all\">Mark all as complete</label>\n        <ul className=\"todo-list\">{todoItems}</ul>\n      </section>\n    );\n  }\n\n  return (\n    <div>\n      <header className=\"header\">\n        <h1>todos</h1>\n        <input\n          id=\"newField\"\n          className=\"new-todo\"\n          placeholder=\"What needs to be done?\"\n          onKeyDown={handleNewTodoKeyDown}\n          autoFocus={true}\n        />\n      </header>\n      {main}\n      {footer}\n    </div>\n  );\n};\n\nexport default App;\n```",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "89988761-9fe2-4371-ad3c-b5dba54859ac"
+        },
+        {
+          "role": "user",
+          "content": "Give me the updated content of file /src/components/Footer.tsx ",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "```tsx\nimport { useState } from \"react\";\nimport { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS } from \"../utils/constants\";\n\nconst Footer = ({ count, completedCount, nowShowing, onClearCompleted }) => {\n  const [filter, setFilter] = useState(nowShowing);\n\n  const handleFilterChange = (event) => {\n    setFilter(event.target.value);\n  };\n\n  return (\n    <footer className=\"footer\">\n      <span className=\"todo-count\">\n        <strong>{count}</strong> item{count === 1 ? \"\" : \"s\"} left\n      </span>\n      <ul className=\"filters\">\n        <li>\n          <a\n            href=\"#/\"\n            className={filter === ALL_TODOS ? \"selected\" : \"\"}\n            onClick={handleFilterChange}\n          >\n            All\n          </a>\n        </li>\n        <li>\n          <a\n            href=\"#/active\"\n            className={filter === ACTIVE_TODOS ? \"selected\" : \"\"}\n            onClick={handleFilterChange}\n          >\n            Active\n          </a>\n        </li>\n        <li>\n          <a\n            href=\"#/completed\"\n            className={filter === COMPLETED_TODOS ? \"selected\" : \"\"}\n            onClick={handleFilterChange}\n          >\n            Completed\n          </a>\n        </li>\n      </ul>\n      {completedCount > 0 && (\n        <button className=\"clear-completed\" onClick={onClearCompleted}>\n          Clear completed\n        </button>\n      )}\n    </footer>\n  );\n};\n\nexport default Footer;\n```",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "2560f1c5-bb36-4e86-8e55-a4bac3e87d50"
+        },
+        {
+          "role": "user",
+          "content": "Give me the updated content of file /src/components/TodoItem.tsx ",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "```tsx\nimport { useState } from \"react\";\nimport { ENTER_KEY, ESCAPE_KEY } from \"../utils/constants\";\n\nconst TodoItem = ({\n  todo,\n  onToggle,\n  onDestroy,\n  onEdit,\n  editing,\n  onSave,\n  onCancel,\n}) => {\n  const [editText, setEditText] = useState(todo.title);\n\n  const handleSubmit = (event) => {\n    event.preventDefault();\n\n    const val = editText.trim();\n\n    if (val) {\n      onSave(val);\n      setEditText(val);\n    } else {\n      onDestroy();\n    }\n  };\n\n  const handleEdit = () => {\n    onEdit();\n    setEditText(todo.title);\n  };\n\n  const handleKeyDown = (event) => {\n    if (event.keyCode === ESCAPE_KEY) {\n      setEditText(todo.title);\n      onCancel();\n    } else if (event.keyCode === ENTER_KEY) {\n      handleSubmit(event);\n    }\n  };\n\n  const handleChange = (event) => {\n    const input = event.target as HTMLInputElement;\n    setEditText(input.value);\n  };\n\n  return (\n    <li className={editing ? \"editing\" : \"\"}>\n      <div className=\"view\">\n        <input\n          className=\"toggle\"\n          type=\"checkbox\"\n          checked={todo.completed}\n          onChange={onToggle}\n        />\n        <label onDoubleClick={handleEdit}>{todo.title}</label>\n        <button className=\"destroy\" onClick={onDestroy} />\n      </div>\n      {editing && (\n        <input\n          className=\"edit\"\n          value={editText}\n          onBlur={handleSubmit}\n          onChange={handleChange}\n          onKeyDown={handleKeyDown}\n        />\n      )}\n    </li>\n  );\n};\n\nexport default TodoItem;\n```",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "836cec0d-55a7-404c-8be3-b13045826f00"
+        },
+        {
+          "role": "user",
+          "content": "Give me the updated content of file /src/models/TodoModel.ts ",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "```typescript\nimport { Utils } from \"../utils/utils\";\n\nclass TodoModel {\n  private key: string;\n  private todos: Todo[];\n  private onChanges: Function[];\n\n  constructor(key: string) {\n    this.key = key;\n    this.todos = Utils.store(key) || [];\n    this.onChanges = [];\n  }\n\n  public subscribe(onChange: Function) {\n    this.onChanges.push(onChange);\n  }\n\n  public inform() {\n    Utils.store(this.key, this.todos);\n    this.onChanges.forEach((cb) => cb());\n  }\n\n  public addTodo(title: string) {\n    this.todos = this.todos.concat({\n      id: Utils.uuid(),\n      title,\n      completed: false,\n    });\n\n    this.inform();\n  }\n\n  public toggleAll(checked: boolean) {\n    this.todos = this.todos.map((todo) => ({ ...todo, completed: checked }));\n\n    this.inform();\n  }\n\n  public toggle(todoToToggle: Todo) {\n    this.todos = this.todos.map((todo) =>\n      todo !== todoToToggle ? todo : { ...todo, completed: !todo.completed }\n    );\n\n    this.inform();\n  }\n\n  public destroy(todo: Todo) {\n    this.todos = this.todos.filter((t) => t !== todo);\n\n    this.inform();\n  }\n\n  public save(todoToSave: Todo, text: string) {\n    this.todos = this.todos.map((todo) =>\n      todo !== todoToSave ? todo : { ...todo, title: text }\n    );\n\n    this.inform();\n  }\n\n  public clearCompleted() {\n    this.todos = this.todos.filter((todo) => !todo.completed);\n\n    this.inform();\n  }\n}\n\nexport default TodoModel;\n```",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "8d1e6606-131c-49cf-9721-00541e70ad43"
+        },
+        {
+          "role": "user",
+          "content": "Give me the updated content of file /src/utils/constants.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "```typescript\nexport const ALL_TODOS = \"all\";\nexport const ACTIVE_TODOS = \"active\";\nexport const COMPLETED_TODOS = \"completed\";\nexport const ENTER_KEY = 13;\nexport const ESCAPE_KEY = 27;\n```",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "7de0f520-ed43-4312-b846-2849cd2e6afb"
+        },
+        {
+          "role": "user",
+          "content": "Give me the updated content of file /src/utils/utils.ts",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          }
+        },
+        {
+          "content": "```typescript\nclass Utils {\n  public static uuid(): string {\n    let i;\n    let random;\n    let uuid = \"\";\n\n    for (i = 0; i < 32; i++) {\n      random = Math.random() * 16 | 0;\n      if (i === 8 || i === 12 || i === 16 || i === 20) {\n        uuid += \"-\";\n      }\n      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))\n        .toString(16);\n    }\n\n    return uuid;\n  }\n\n  public static pluralize(count: number, word: string): string {\n    return count === 1 ? word : word + \"s\";\n  }\n\n  public static store(namespace: string, data?: any): any {\n    if (data) {\n      return localStorage.setItem(namespace, JSON.stringify(data));\n    }\n\n    const store = localStorage.getItem(namespace);\n    return store && JSON.parse(store) || [];\n  }\n\n  public static extend(...objs: any[]): any {\n    const newObj = {};\n    for (let i = 0; i < objs.length; i++) {\n      const obj = objs[i];\n      for (const key in obj) {\n        if (obj.hasOwnProperty(key)) {\n          newObj[key] = obj[key];\n        }\n      }\n    }\n    return newObj;\n  }\n}\n\nexport { Utils };\n```",
+          "model": {
+            "id": "gemini-pro"
+          },
+          "settings": {
+            "prompt": "As an AI proficient in software engineering, particularly in Frontend development and React 18.х, your objective is to resolve the provided development tasks.",
+            "temperature": 0,
+            "selectedAddons": []
+          },
+          "role": "assistant",
+          "responseId": "e5f94e09-362d-48e8-b4e7-985bc3331025"
+        }
+      ],
+      "selectedAddons": [],
+      "lastActivityDate": 1713276471961,
+      "isPublished": false,
+      "isShared": false,
+      "publishedWithMe": false,
+      "sharedWithMe": false,
+      "status": "LOADED",
+      "isMessageStreaming": false,
+      "isNameChanged": true
+    }
+  ],
+  "folders": [
+    {
+      "id": "conversations/3qHCxt7ydCCSU9xr1wWBC3VRKEfv77RMob3ywSCfCsv9pWzkTYLqvDFfPyCKuHZT1H/context exp. update React",
+      "name": "context exp. update React",
+      "type": "chat",
+      "folderId": "conversations/3qHCxt7ydCCSU9xr1wWBC3VRKEfv77RMob3ywSCfCsv9pWzkTYLqvDFfPyCKuHZT1H",
+      "status": "LOADED"
+    }
+  ]
+}

@@ -1,0 +1,702 @@
+I have the following application code that needs to describe in a form of technical documentation
+
+app.tsx
+```tsx
+declare var Router;
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { TodoModel } from "./todoModel";
+import { TodoFooter } from "./footer";
+import { TodoItem } from "./todoItem";
+import { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY } from "./constants";
+
+class TodoApp extends React.Component<IAppProps, IAppState> {
+
+  public state : IAppState;
+
+  constructor(props : IAppProps) {
+    super(props);
+    this.state = {
+      nowShowing: ALL_TODOS,
+      editing: null
+    };
+  }
+
+  public componentDidMount() {
+    var setState = this.setState;
+    var router = Router({
+      '/': setState.bind(this, {nowShowing: ALL_TODOS}),
+      '/active': setState.bind(this, {nowShowing: ACTIVE_TODOS}),
+      '/completed': setState.bind(this, {nowShowing: COMPLETED_TODOS})
+    });
+    router.init('/');
+  }
+
+  public handleNewTodoKeyDown(event : React.KeyboardEvent) {
+    if (event.keyCode !== ENTER_KEY) {
+      return;
+    }
+
+    event.preventDefault();
+
+    var val = (ReactDOM.findDOMNode(this.refs["newField"]) as HTMLInputElement).value.trim();
+
+    if (val) {
+      this.props.model.addTodo(val);
+      (ReactDOM.findDOMNode(this.refs["newField"]) as HTMLInputElement).value = '';
+    }
+  }
+
+  public toggleAll(event : React.FormEvent) {
+    var target : any = event.target;
+    var checked = target.checked;
+    this.props.model.toggleAll(checked);
+  }
+
+  public toggle(todoToToggle : ITodo) {
+    this.props.model.toggle(todoToToggle);
+  }
+
+  public destroy(todo : ITodo) {
+    this.props.model.destroy(todo);
+  }
+
+  public edit(todo : ITodo) {
+    this.setState({editing: todo.id});
+  }
+
+  public save(todoToSave : ITodo, text : String) {
+    this.props.model.save(todoToSave, text);
+    this.setState({editing: null});
+  }
+
+  public cancel() {
+    this.setState({editing: null});
+  }
+
+  public clearCompleted() {
+    this.props.model.clearCompleted();
+  }
+
+  public render() {
+    var footer;
+    var main;
+    const todos = this.props.model.todos;
+
+    var shownTodos = todos.filter((todo) => {
+      switch (this.state.nowShowing) {
+      case ACTIVE_TODOS:
+        return !todo.completed;
+      case COMPLETED_TODOS:
+        return todo.completed;
+      default:
+        return true;
+      }
+    });
+
+    var todoItems = shownTodos.map((todo) => {
+      return (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onToggle={this.toggle.bind(this, todo)}
+          onDestroy={this.destroy.bind(this, todo)}
+          onEdit={this.edit.bind(this, todo)}
+          editing={this.state.editing === todo.id}
+          onSave={this.save.bind(this, todo)}
+          onCancel={ e => this.cancel() }
+        />
+      );
+    });
+
+    // Note: It's usually better to use immutable data structures since they're
+    // easier to reason about and React works very well with them. That's why
+    // we use map(), filter() and reduce() everywhere instead of mutating the
+    // array or todo items themselves.
+    var activeTodoCount = todos.reduce(function (accum, todo) {
+      return todo.completed ? accum : accum + 1;
+    }, 0);
+
+    var completedCount = todos.length - activeTodoCount;
+
+    if (activeTodoCount || completedCount) {
+      footer =
+        <TodoFooter
+          count={activeTodoCount}
+          completedCount={completedCount}
+          nowShowing={this.state.nowShowing}
+          onClearCompleted={ e=> this.clearCompleted() }
+        />;
+    }
+
+    if (todos.length) {
+      main = (
+        <section className="main">
+          <input
+            id="toggle-all"
+            className="toggle-all"
+            type="checkbox"
+            onChange={ e => this.toggleAll(e) }
+            checked={activeTodoCount === 0}
+          />
+          <label
+            htmlFor="toggle-all"
+          >
+            Mark all as complete
+          </label>
+          <ul className="todo-list">
+            {todoItems}
+          </ul>
+        </section>
+      );
+    }
+
+    return (
+      <div>
+        <header className="header">
+          <h1>todos</h1>
+          <input
+            ref="newField"
+            className="new-todo"
+            placeholder="What needs to be done?"
+            onKeyDown={ e => this.handleNewTodoKeyDown(e) }
+            autoFocus={true}
+          />
+        </header>
+        {main}
+        {footer}
+      </div>
+    );
+  }
+}
+
+var model = new TodoModel('react-todos');
+
+function render() {
+  ReactDOM.render(
+    <TodoApp model={model}/>,
+    document.getElementsByClassName('todoapp')[0]
+  );
+}
+
+model.subscribe(render);
+render();
+
+```
+
+todoItem.tsx
+```tsx
+import * as classNames from "classnames";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { ENTER_KEY, ESCAPE_KEY } from "./constants";
+
+class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+
+  public state : ITodoItemState;
+
+  constructor(props : ITodoItemProps){
+    super(props);
+    this.state = { editText: this.props.todo.title };
+  }
+
+  public handleSubmit(event : React.FormEvent) {
+    var val = this.state.editText.trim();
+    if (val) {
+      this.props.onSave(val);
+      this.setState({editText: val});
+    } else {
+      this.props.onDestroy();
+    }
+  }
+
+  public handleEdit() {
+    this.props.onEdit();
+    this.setState({editText: this.props.todo.title});
+  }
+
+  public handleKeyDown(event : React.KeyboardEvent) {
+    if (event.keyCode === ESCAPE_KEY) {
+      this.setState({editText: this.props.todo.title});
+      this.props.onCancel(event);
+    } else if (event.keyCode === ENTER_KEY) {
+      this.handleSubmit(event);
+    }
+  }
+
+  public handleChange(event : React.FormEvent) {
+    var input : any = event.target;
+    this.setState({ editText : input.value });
+  }
+
+  /**
+   * This is a completely optional performance enhancement that you can
+   * implement on any React component. If you were to delete this method
+   * the app would still work correctly (and still be very performant!), we
+   * just use it as an example of how little code it takes to get an order
+   * of magnitude performance improvement.
+   */
+  public shouldComponentUpdate(nextProps : ITodoItemProps, nextState : ITodoItemState) {
+    return (
+      nextProps.todo !== this.props.todo ||
+      nextProps.editing !== this.props.editing ||
+      nextState.editText !== this.state.editText
+    );
+  }
+
+  /**
+   * Safely manipulate the DOM after updating the state when invoking
+   * `this.props.onEdit()` in the `handleEdit` method above.
+   * For more info refer to notes at https://facebook.github.io/react/docs/component-api.html#setstate
+   * and https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
+   */
+  public componentDidUpdate(prevProps : ITodoItemProps) {
+    if (!prevProps.editing && this.props.editing) {
+      var node = (ReactDOM.findDOMNode(this.refs["editField"]) as HTMLInputElement);
+      node.focus();
+      node.setSelectionRange(node.value.length, node.value.length);
+    }
+  }
+
+  public render() {
+    return (
+      <li className={classNames({
+        completed: this.props.todo.completed,
+        editing: this.props.editing
+      })}>
+        <div className="view">
+          <input
+            className="toggle"
+            type="checkbox"
+            checked={this.props.todo.completed}
+            onChange={this.props.onToggle}
+          />
+          <label onDoubleClick={ e => this.handleEdit() }>
+            {this.props.todo.title}
+          </label>
+          <button className="destroy" onClick={this.props.onDestroy} />
+        </div>
+        <input
+          ref="editField"
+          className="edit"
+          value={this.state.editText}
+          onBlur={ e => this.handleSubmit(e) }
+          onChange={ e => this.handleChange(e) }
+          onKeyDown={ e => this.handleKeyDown(e) }
+        />
+      </li>
+    );
+  }
+}
+
+export { TodoItem };
+
+```
+
+utils.ts
+```ts
+
+class Utils {
+  public static uuid() : string {
+    var i, random;
+    var uuid = '';
+
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      if (i === 8 || i === 12 || i === 16 || i === 20) {
+        uuid += '-';
+      }
+      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+        .toString(16);
+    }
+
+    return uuid;
+  }
+
+  public static pluralize(count: number, word: string) {
+    return count === 1 ? word : word + 's';
+  }
+
+  public static store(namespace : string, data? : any) {
+    if (data) {
+      return localStorage.setItem(namespace, JSON.stringify(data));
+    }
+
+    var store = localStorage.getItem(namespace);
+    return (store && JSON.parse(store)) || [];
+  }
+
+  public static extend(...objs : any[]) : any {
+    var newObj = {};
+    for (var i = 0; i < objs.length; i++) {
+      var obj = objs[i];
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          newObj[key] = obj[key];
+        }
+      }
+    }
+    return newObj;
+  }
+}
+
+export { Utils };
+
+```
+
+footer.tsx
+```tsx
+import * as classNames from "classnames";
+import * as React from "react";
+import { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS } from "./constants";
+import { Utils } from "./utils";
+
+class TodoFooter extends React.Component<ITodoFooterProps, {}> {
+
+  public render() {
+    var activeTodoWord = Utils.pluralize(this.props.count, 'item');
+    var clearButton = null;
+
+    if (this.props.completedCount > 0) {
+      clearButton = (
+        <button
+          className="clear-completed"
+          onClick={this.props.onClearCompleted}>
+          Clear completed
+        </button>
+      );
+    }
+
+    const nowShowing = this.props.nowShowing;
+    return (
+      <footer className="footer">
+        <span className="todo-count">
+          <strong>{this.props.count}</strong> {activeTodoWord} left
+        </span>
+        <ul className="filters">
+          <li>
+            <a
+              href="#/"
+              className={classNames({selected: nowShowing === ALL_TODOS})}>
+                All
+            </a>
+          </li>
+          {' '}
+          <li>
+            <a
+              href="#/active"
+              className={classNames({selected: nowShowing === ACTIVE_TODOS})}>
+                Active
+            </a>
+          </li>
+          {' '}
+          <li>
+            <a
+              href="#/completed"
+              className={classNames({selected: nowShowing === COMPLETED_TODOS})}>
+                Completed
+            </a>
+          </li>
+        </ul>
+        {clearButton}
+      </footer>
+    );
+  }
+}
+
+export { TodoFooter };
+
+```
+
+constants.ts
+```ts
+const ALL_TODOS = 'all';
+const ACTIVE_TODOS = 'active';
+const COMPLETED_TODOS = 'completed';
+const ENTER_KEY = 13;
+const ESCAPE_KEY = 27;
+export { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS, ENTER_KEY, ESCAPE_KEY };
+
+```
+
+todoModel.ts
+```ts
+import { Utils } from "./utils";
+class TodoModel implements ITodoModel {
+  public key : string;
+  public todos : Array<ITodo>;
+  public onChanges : Array<any>;
+
+  constructor(key) {
+    this.key = key;
+    this.todos = Utils.store(key);
+    this.onChanges = [];
+  }
+
+  public subscribe(onChange) {
+    this.onChanges.push(onChange);
+  }
+
+  public inform() {
+    Utils.store(this.key, this.todos);
+    this.onChanges.forEach(function (cb) { cb(); });
+  }
+
+  public addTodo(title : string) {
+    this.todos = this.todos.concat({
+      id: Utils.uuid(),
+      title: title,
+      completed: false
+    });
+
+    this.inform();
+  }
+
+  public toggleAll(checked : Boolean) {
+    // Note: It's usually better to use immutable data structures since they're
+    // easier to reason about and React works very well with them. That's why
+    // we use map(), filter() and reduce() everywhere instead of mutating the
+    // array or todo items themselves.
+    this.todos = this.todos.map<ITodo>((todo : ITodo) => {
+      return Utils.extend({}, todo, {completed: checked});
+    });
+
+    this.inform();
+  }
+
+  public toggle(todoToToggle : ITodo) {
+    this.todos = this.todos.map<ITodo>((todo : ITodo) => {
+      return todo !== todoToToggle ?
+        todo :
+        Utils.extend({}, todo, {completed: !todo.completed});
+    });
+
+    this.inform();
+  }
+
+  public destroy(todo : ITodo) {
+    this.todos = this.todos.filter(function (candidate) {
+      return candidate !== todo;
+    });
+
+    this.inform();
+  }
+
+  public save(todoToSave : ITodo, text : string) {
+    this.todos = this.todos.map(function (todo) {
+      return todo !== todoToSave ? todo : Utils.extend({}, todo, {title: text});
+    });
+
+    this.inform();
+  }
+
+  public clearCompleted() {
+    this.todos = this.todos.filter(function (todo) {
+      return !todo.completed;
+    });
+
+    this.inform();
+  }
+}
+
+export { TodoModel };
+
+```
+
+
+The documentation should cover the following aspects:
+- Overview: A brief introduction to the component, including its purpose and key features.
+- Features: A detailed list of the component's features. This should include:
+- Props: A table or list describing each prop the component accepts, including the prop's name, type, description, and whether it is optional or required.
+- Usage: An example of how to use the component in frontend application, including a sample code snippet.
+- Accessibility: A detailed explanation of the accessibility features of the component, including any ARIA roles and attributes used. Explain how these features make the component accessible to users with assistive technologies.
+- Conclusion: A brief closing statement summarizing the component's benefits and its contribution to creating a user-friendly, accessible UI.
+## Run 1:
+### Answer:
+# Todo Application Documentation
+
+## Overview
+
+The **Todo Application** is a simple yet powerful task management tool built using **React**. It allows users to create, edit, delete, and manage their tasks efficiently. The application supports filtering tasks based on their status (All, Active, Completed) and provides a clean, user-friendly interface. The app is designed with performance optimizations and accessibility in mind, ensuring a smooth experience for all users, including those using assistive technologies.
+
+## Features
+
+The Todo Application offers the following key features:
+
+1. **Add New Todos**: Users can add new tasks by typing in the input field and pressing the `Enter` key.
+2. **Mark Todos as Completed**: Users can mark tasks as completed by toggling the checkbox next to each task.
+3. **Edit Todos**: Users can double-click on a task to edit its title.
+4. **Delete Todos**: Users can delete tasks by clicking the delete button next to each task.
+5. **Filter Todos**: Users can filter tasks by their status (All, Active, Completed).
+6. **Clear Completed Todos**: Users can clear all completed tasks with a single click.
+7. **Toggle All Todos**: Users can mark all tasks as completed or active using the "Mark all as complete" checkbox.
+8. **Persistent Storage**: The app uses `localStorage` to persist tasks across page reloads.
+
+## Components
+
+### 1. **TodoApp Component**
+
+#### Props
+
+| Prop Name | Type       | Description                          | Required |
+|-----------|------------|--------------------------------------|----------|
+| `model`   | `TodoModel`| The model that manages the todo data | Yes      |
+
+#### State
+
+| State Name  | Type     | Description                                      |
+|-------------|----------|--------------------------------------------------|
+| `nowShowing`| `string` | The current filter for displaying todos (all, active, completed) |
+| `editing`   | `string` | The ID of the todo currently being edited        |
+
+#### Methods
+
+- **componentDidMount**: Initializes the router to handle URL changes for filtering todos.
+- **handleNewTodoKeyDown**: Handles the creation of new todos when the `Enter` key is pressed.
+- **toggleAll**: Toggles the completion status of all todos.
+- **toggle**: Toggles the completion status of a specific todo.
+- **destroy**: Deletes a specific todo.
+- **edit**: Sets a todo into edit mode.
+- **save**: Saves the edited todo.
+- **cancel**: Cancels the edit mode.
+- **clearCompleted**: Clears all completed todos.
+
+#### Render
+
+The `render` method dynamically generates the UI based on the current state of the todos. It includes:
+- A header with an input field for adding new todos.
+- A main section that lists todos and allows toggling, editing, and deleting.
+- A footer that shows the count of active todos, filtering options, and a button to clear completed todos.
+
+### 2. **TodoItem Component**
+
+#### Props
+
+| Prop Name   | Type       | Description                                      | Required |
+|-------------|------------|--------------------------------------------------|----------|
+| `todo`      | `ITodo`    | The todo item to be displayed                    | Yes      |
+| `onToggle`  | `function` | Callback to toggle the completion status         | Yes      |
+| `onDestroy` | `function` | Callback to delete the todo                      | Yes      |
+| `onEdit`    | `function` | Callback to enter edit mode                      | Yes      |
+| `onSave`    | `function` | Callback to save the edited todo                 | Yes      |
+| `onCancel`  | `function` | Callback to cancel the edit mode                 | Yes      |
+| `editing`   | `boolean`  | Whether the todo is currently being edited       | Yes      |
+
+#### State
+
+| State Name | Type     | Description                                      |
+|------------|----------|--------------------------------------------------|
+| `editText` | `string` | The current text of the todo being edited        |
+
+#### Methods
+
+- **handleSubmit**: Submits the edited todo.
+- **handleEdit**: Puts the todo into edit mode.
+- **handleKeyDown**: Handles keyboard events for saving or canceling edits.
+- **handleChange**: Updates the state when the todo text is changed.
+- **shouldComponentUpdate**: Optimizes performance by preventing unnecessary re-renders.
+- **componentDidUpdate**: Focuses the input field when entering edit mode.
+
+#### Render
+
+The `render` method displays a single todo item with the following elements:
+- A checkbox to toggle the completion status.
+- A label that displays the todo title and allows editing on double-click.
+- A delete button to remove the todo.
+- An input field for editing the todo when in edit mode.
+
+### 3. **TodoFooter Component**
+
+#### Props
+
+| Prop Name         | Type       | Description                                      | Required |
+|-------------------|------------|--------------------------------------------------|----------|
+| `count`           | `number`   | The number of active todos                       | Yes      |
+| `completedCount`  | `number`   | The number of completed todos                    | Yes      |
+| `nowShowing`      | `string`   | The current filter (all, active, completed)      | Yes      |
+| `onClearCompleted`| `function` | Callback to clear all completed todos            | Yes      |
+
+#### Render
+
+The `render` method displays the footer with the following elements:
+- A count of active todos.
+- Filter links to switch between "All", "Active", and "Completed" views.
+- A button to clear completed todos (only visible if there are completed todos).
+
+### 4. **TodoModel Class**
+
+The `TodoModel` class manages the todo data and provides methods to manipulate the todos. It uses `localStorage` to persist the data.
+
+#### Methods
+
+- **subscribe**: Registers a callback to be called when the todos change.
+- **inform**: Notifies all subscribers of changes to the todos.
+- **addTodo**: Adds a new todo.
+- **toggleAll**: Toggles the completion status of all todos.
+- **toggle**: Toggles the completion status of a specific todo.
+- **destroy**: Deletes a specific todo.
+- **save**: Saves the edited todo.
+- **clearCompleted**: Clears all completed todos.
+
+### 5. **Utils Class**
+
+The `Utils` class provides utility functions for the application.
+
+#### Methods
+
+- **uuid**: Generates a unique identifier for each todo.
+- **pluralize**: Returns the plural form of a word based on the count.
+- **store**: Saves or retrieves data from `localStorage`.
+- **extend**: Merges multiple objects into one.
+
+## Usage
+
+To use the Todo Application in a frontend project, follow these steps:
+
+1. **Install Dependencies**: Ensure you have React and ReactDOM installed in your project.
+2. **Create the Components**: Copy the provided components (`TodoApp`, `TodoItem`, `TodoFooter`, `TodoModel`, `Utils`) into your project.
+3. **Render the Application**: Use the following code to render the TodoApp component:
+
+```tsx
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { TodoApp } from "./app";
+import { TodoModel } from "./todoModel";
+
+const model = new TodoModel('react-todos');
+
+function render() {
+  ReactDOM.render(
+    <TodoApp model={model} />,
+    document.getElementsByClassName('todoapp')[0]
+  );
+}
+
+model.subscribe(render);
+render();
+```
+
+4. **Run the Application**: Open the application in a browser, and you will see the Todo App interface.
+
+## Accessibility
+
+The Todo Application is designed with accessibility in mind, ensuring that users with assistive technologies can interact with the app effectively.
+
+### ARIA Roles and Attributes
+
+- **Input Fields**: The input fields for adding and editing todos are focusable and have appropriate labels.
+- **Checkboxes**: The checkboxes for toggling the completion status of todos are accessible via keyboard and screen readers.
+- **Buttons**: The delete and clear buttons are accessible and can be activated using the keyboard.
+- **Focus Management**: When a todo is edited, the input field is automatically focused, and the cursor is placed at the end of the text.
+- **Keyboard Navigation**: Users can navigate the app using the keyboard. The `Enter` key is used to add or save todos, and the `Escape` key cancels editing.
+
+### Screen Reader Compatibility
+
+The app uses semantic HTML elements (e.g., `input`, `button`, `label`) to ensure compatibility with screen readers. The use of `aria-label` and proper focus management ensures that users with visual impairments can interact with the app effectively.
+
+## Conclusion
+
+The Todo Application is a robust, user-friendly task management tool that provides essential features for managing tasks efficiently. With its clean design, performance optimizations, and accessibility features, it offers a seamless experience for all users, including those using assistive technologies. The app's modular structure and reusable components make it easy to integrate into any React-based project, contributing to a more organized and productive workflow.
+
+### Tokens: {'input_tokens': 3297, 'output_tokens': 1930, 'reasoning_tokens': 0}
+### Execution time: 24.808162927627563

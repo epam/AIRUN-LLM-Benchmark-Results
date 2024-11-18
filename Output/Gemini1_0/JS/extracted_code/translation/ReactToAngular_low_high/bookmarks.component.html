@@ -1,0 +1,24 @@
+<app-page-header header="My bookmarks"></app-page-header>
+<form (ngSubmit)="handleSearch($event)">
+  <input
+    type="search"
+    #query
+    (click)="handleSelectSearch($event)"
+    placeholder="Find a podcast in your bookmarks"
+  />
+  <button type="submit" class="form-control" [disabled]="!query.value">
+    <app-icon icon="search"></app-icon> Search
+  </button>
+  <button type="button" class="form-control" *ngIf="query.value" (click)="handleClearSearch($event)">
+    <app-icon icon="refresh"></app-icon> Show all bookmarks
+  </button>
+</form>
+<app-podcast-list
+  [podcasts]="podcasts$ | async"
+  [page]="page$ | async"
+  [searchQuery]="query.value"
+  [showChannel]="true"
+  [isLoggedIn]="true"
+  [ifEmpty]="'No bookmarks found'"
+  (onSelectPage)="handleSelectPage($event)"
+></app-podcast-list>

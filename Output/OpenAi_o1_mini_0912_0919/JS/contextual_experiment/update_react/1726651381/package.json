@@ -1,0 +1,25 @@
+{
+  "name": "react-todos",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "classnames": "^2.3.2",
+    "nanoid": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.3.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "typescript": "^4.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  }
+}

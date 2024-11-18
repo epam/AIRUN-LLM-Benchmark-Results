@@ -1,0 +1,40 @@
+{
+  "name": "angular-to-react-migration",
+  "version": "1.0.0",
+  "description": "Migrating AngularJS code to React 18.x with TypeScript and Redux Toolkit.",
+  "main": "index.tsx",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.8.3",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.7.18",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-redux": "^8.0.1",
+    "axios": "^0.27.2",
+    "nanoid": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.2",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {},
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

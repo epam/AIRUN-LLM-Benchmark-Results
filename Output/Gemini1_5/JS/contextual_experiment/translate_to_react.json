@@ -1,0 +1,885 @@
+{
+  "title": "translate to react experiment",
+  "description": "",
+  "parameters": {
+    "groundingPromptConfig": {
+      "disabled": true,
+      "groundingConfig": {
+        "sources": [
+          {
+            "type": "VERTEX_AI_SEARCH"
+          }
+        ]
+      }
+    },
+    "stopSequences": [],
+    "temperature": 0,
+    "tokenLimits": 8192,
+    "topP": 0.95
+  },
+  "systemInstruction": {
+    "parts": [
+      {
+        "text": "As an AI proficient in software engineering, particularly in Frontend development, React and Angular, your objective is to resolve the provided development tasks."
+      }
+    ]
+  },
+  "type": "chat",
+  "examples": [],
+  "messages": [
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "Your task is to translate outdated AngularJS app code to recent version of React using functional components and hooks. Outdated application is composed of the following files:\njs/controllers/todo.js\njs/directives/todoEscape.js\njs/directives/todoFocus.js\njs/services/todoStorage.js\njs/app.js\njs/main.js\nindex.html\nYour task is to request content of each file step by step and analyze its implementation. You should ask for files content by the command: \"Give me the content of <file.extenstion>\"\nAfter getting and analyzing of all file's content - think thoroughly and "
+          },
+          {
+            "text": "return only new file structure"
+          },
+          {
+            "text": " of translated React application in a form of list. After you return the file structure of the updated application, I will request you for each file by its number in the list\nApply these instructions for translated application:\nUse the following libraries: TypeScript, Redux Toolkit with createSlice, and nanoid."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "Provide configuration of the store and provider if needed."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "Split the code into separate components."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "Optimize the code where possible."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "The converted code should not contain any TODOs."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "Return the translated code as markdown code snippets."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "Simply return the codebase without additional comments or explanations on how to convert it."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "Example of response where number is an alias for file: 1 - ./App.tsx 2 - ./constants.ts 3 - ..\nDo not add any comments in generated code and follow the instructions precisely.\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Please provide me with the content of each file, starting with \"Give me the content of js/controllers/todo.js\". I will then analyze each file and provide the new file structure for the React application. \n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "/*global define*/\n'use strict';\n\n"
+          },
+          {
+            "text": "/**"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " * The main controller for the app. The controller:"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " * - retrieves and persist the model via the todoStorage service"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " * - exposes the model to the template and provides event handlers"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " */"
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "define"
+          },
+          {
+            "text": "([\n  'angular'\n], function (angular) {\n  return ['$scope', '$location', 'todoStorage', 'filterFilter',\n   function ($scope, $location, todoStorage, filterFilter) {\n    var todos = $scope.todos = todoStorage.get();\n\n    $scope.newTodo = '';\n    $scope.editedTodo = null;\n\n    $scope.$watch('todos', function () {\n     $scope.remainingCount = filterFilter(todos, { completed: false }).length;\n     $scope.doneCount = todos.length - $scope.remainingCount;\n     $scope.allChecked = !$scope.remainingCount;\n     todoStorage.put(todos);\n    }, true);\n\n    if ($location.path() === '') {\n     $location.path('/');\n    }\n\n    $scope.location = $location;\n\n    $scope.$watch('location.path()', function (path) {\n     $scope.statusFilter = (path === '/active') ?\n      { completed: false } : (path === '/completed') ?\n      { completed: true } : null;\n    });\n\n\n    $scope.addTodo = function () {\n     var newTodo = $scope.newTodo.trim();\n     if (!newTodo.length) {\n      return;\n     }\n\n     todos.push({\n      title: newTodo,\n      completed: false\n     });\n\n     $scope.newTodo = '';\n    };\n\n\n    $scope.editTodo = function (todo) {\n     $scope.editedTodo = todo;\n     // Clone the original "
+          },
+          {
+            "text": "todo to restore it on demand."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "     "
+          },
+          {
+            "text": "$scope.originalTodo = angular.copy(todo);\n    };\n\n\n    $scope.doneEditing = function (todo) {\n     $scope.editedTodo = null;\n     todo.title = todo.title.trim();\n\n     if (!todo.title) {\n      $scope.removeTodo(todo);\n     }\n    };\n\n    $scope.revertEditing = function (todo) {\n     todos[todos.indexOf(todo)] = $scope.originalTodo;\n     $scope.doneEditing($scope.originalTodo);\n    };\n\n    $scope.removeTodo = function (todo) {\n     todos.splice(todos.indexOf(todo), 1);\n    };\n\n\n    $scope.clearDoneTodos = function () {\n     $scope.todos = todos = todos.filter(function (val) {\n      return !val.completed;\n     });\n    };\n\n\n    $scope.markAll = function (done) {\n     todos.forEach(function (todo) {\n      todo.completed = done;\n     });\n    };\n   }\n  ];\n});\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of js/directives/todoEscape.js\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "/*global define*/\n'use strict';\n\n"
+          },
+          {
+            "text": "/**"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " * Directive that catches the \"Escape\" key on the element applied to and evaluates the expression it binds to."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " */"
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "define"
+          },
+          {
+            "text": "([\n  'angular'\n], function (angular) {\n  var moduleName = 'TodoEscapeDirective';\n  angular\n   .module(moduleName, [])\n   .directive('todoEscape', function () {\n    var ESCAPE_KEY = 27;\n\n    return function (scope, elem, attrs) {\n     elem.bind('keydown', function (event) {\n      if (event.keyCode === ESCAPE_KEY) {\n       scope.$apply(attrs.todoEscape);\n      }\n     });\n\n     scope.$on('$destroy', function () {\n      elem.unbind('keydown');\n     });\n    };\n   });\n  return moduleName;\n});\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of js/directives/todoFocus.js\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "/*global define*/\n'use strict';\n\n"
+          },
+          {
+            "text": "/**"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " * Directive that places focus on the element it is applied to when the expression it binds to evaluates to true."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " */"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " "
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "define"
+          },
+          {
+            "text": "([\n  'angular'\n], function (angular) {\n  var moduleName = 'TodoFocusDirective';\n  angular\n   .module(moduleName, [])\n   .directive('todoFocus', ['$timeout', function ($timeout) {\n    return function (scope, elem, attrs) {\n     scope.$watch(attrs.todoFocus, function (newval) {\n      if (newval) {\n       $timeout(function () {\n        elem[0].focus();\n       }, 0, false);\n      }\n     });\n    };\n   }]);\n  return moduleName;\n});\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of js/services/todoStorage.js\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "/*global define*/\n'use strict';\n\n"
+          },
+          {
+            "text": "/**"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " * Services that persists and retrieves TODOs from localStorage."
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " */"
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": " "
+          },
+          {
+            "text": "\n"
+          },
+          {
+            "text": "define"
+          },
+          {
+            "text": "([\n  'angular'\n], function (angular) {\n  var moduleName = 'TodoStorageModule';\n  angular\n   .module(moduleName, [])\n   .factory('todoStorage', function () {\n    var STORAGE_ID = 'todos-angularjs-requirejs';\n\n    return {\n     get: function () {\n      return "
+          },
+          {
+            "text": "JSON"
+          },
+          {
+            "text": ".parse("
+          },
+          {
+            "text": "localStorage"
+          },
+          {
+            "text": ".getItem(STORAGE_ID) || '[]');\n     },\n\n     put: function (todos) {\n      "
+          },
+          {
+            "text": "localStorage"
+          },
+          {
+            "text": ".setItem(STORAGE_ID, "
+          },
+          {
+            "text": "JSON"
+          },
+          {
+            "text": ".stringify(todos));\n     }\n    };\n   });\n  return moduleName;\n});\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of js/app.js\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "/*global require*/\n'use strict';\n\n"
+          },
+          {
+            "text": "require"
+          },
+          {
+            "text": "([\n  'angular'\n], function (angular) {\n  "
+          },
+          {
+            "text": "require"
+          },
+          {
+            "text": "([\n   'controllers/todo', \n   'directives/todoFocus', \n   'directives/todoEscape',\n   'services/todoStorage'\n  ], function (todoCtrl, todoFocusDir, todoEscapeDir, todoStorageSrv) {\n   angular\n    .module('todomvc', [todoFocusDir, todoEscapeDir, todoStorageSrv])\n    .controller('TodoController', todoCtrl);\n   angular.bootstrap(document, ['todomvc']);    \n  });  \n});\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of js/main.js\n\n\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "/*global require*/\n'use strict';\n\n"
+          },
+          {
+            "text": "require"
+          },
+          {
+            "text": ".config({\n  paths: {\n   angular: '../node_modules/angular/angular'\n  },\n  shim: {\n   angular: {\n    exports: 'angular'\n   }\n  },\n  deps: ['app']\n});\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Give me the content of index.html \n\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "<!doctype html>\n<html lang=\"en\" data-framework=\"angularjs\">\n    <head>\n       <meta charset=\"utf-8\">\n       <title>AngularJS & RequireJS • TodoMVC</title>\n       <link rel=\"stylesheet\" href=\"node_modules/todomvc-common/base.css\">\n       <link rel=\"stylesheet\" href=\"node_modules/todomvc-app-css/index.css\">\n       <style>[ng-cloak] { display: none; }</style>\n    </head>\n    <body>\n       <section class=\"todoapp\" ng-controller=\"TodoController\">\n          <header class=\"header\">\n             <h1>todos</h1>\n             <form class=\"todo-form\" ng-submit=\"addTodo()\">\n                <input class=\"new-todo\" placeholder=\"What needs to be done?\" ng-model=\"newTodo\" autofocus>\n             </form>\n          </header>\n          <section class=\"main\" ng-show=\"todos.length\" ng-cloak>\n             <input id=\"toggle-all\" class=\"toggle-all\" type=\"checkbox\" ng-model=\"allChecked\" ng-click=\"markAll(allChecked)\">\n             <label for=\"toggle-all\">Mark all as complete</label>\n             <ul class=\"todo-list\">\n                <li ng-repeat=\"todo in todos | filter:statusFilter track by $index\" ng-class=\"{completed: todo.completed, editing: todo == editedTodo}\">\n                   <div class=\"view\">\n                      <input class=\"toggle\" type=\"checkbox\" ng-model=\"todo.completed\">\n                      <label ng-dblclick=\"editTodo(todo)\">{{todo.title}}</label>\n                      <button class=\"destroy\" ng-click=\"removeTodo(todo)\"></button>\n                   </div>\n                   <form ng-submit=\"doneEditing(todo)\">\n                      <input class=\"edit\" ng-trim=\"false\" ng-model=\"todo.title\" ng-blur=\"doneEditing(todo)\" todo-escape=\"revertEditing(todo)\" todo-focus=\"todo == editedTodo\">\n                   </form>\n                </li>\n             </ul>\n          </section>\n          <footer class=\"footer\" ng-show=\"todos.length\" ng-cloak>\n             <span class=\"todo-count\"><strong>{{remainingCount}}</strong>\n                <ng-pluralize count=\"remainingCount\" when=\"{ one: 'item left', other: 'items left' }\"></ng-pluralize>\n             </span>\n             <ul class=\"filters\">\n                <li>\n                   <a ng-class=\"{selected: location.path() == '/'} \" href=\"#/\">All</a>\n                </li>\n                <li>\n                   <a ng-class=\"{selected: location.path() == '/active'}\" href=\"#/active\">Active</a>\n                </li>\n                <li>\n                   <a ng-class=\"{selected: location.path() == '/completed'}\" href=\"#/completed\">Completed</a>\n                </li>\n             </ul>\n             <button class=\"clear-completed\" ng-click=\"clearDoneTodos()\" ng-show=\"remainingCount < todos.length\">Clear completed</button>\n          </footer>\n       </section>\n       <footer class=\"info\">\n          <p>Double-click to edit a todo</p>\n          <p>Credits:\n             <a href=\"http://twitter.com/cburgdorf\">Christoph Burgdorf</a>,\n             <a href=\"http://ericbidelman.com\">Eric Bidelman</a>,\n             <a href=\"http://jacobmumm.com\">Jacob Mumm</a>,\n             <a href=\"http://blog.igorminar.com\">Igor Minar</a> and\n             <a href=\"http://twitter.com/passy\">Pascal Hartig</a>\n          </p>\n          <p>Part of <a href=\"http://todomvc.com\">TodoMVC</a></p>\n       </footer>\n       <script src=\"node_modules/todomvc-common/base.js\"></script>\n       <script data-main=\"js/main\" src=\"node_modules/requirejs/require.js\"></script>\n    </body>\n</html>\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Here is the new file structure for the React application:\n\n1. `./src/App.tsx`\n2. `./src/components/TodoList/TodoList.tsx`\n3. `./src/components/TodoItem/TodoItem.tsx`\n4. `./src/components/TodoInput/TodoInput.tsx`\n5. `./src/components/Footer/Footer.tsx`\n6. `./src/store/index.ts`\n7. `./src/store/todos/todosSlice.ts`\n8. `./src/store/todos/types.ts`\n9. `./src/constants.ts`\n10. `./src/utils/filterTodos.ts`\n\nPlease request the content of each file by its number in the list. For example, \"Give me the content of 1\" for `./src/App.tsx`. \n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "1\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React from 'react';\nimport { useSelector, useDispatch } from 'react-redux';\nimport { RootState } from '../store';\nimport { markAllAsCompleted, clearCompletedTodos } from '../store/todos/todosSlice';\nimport { Filter } from '../constants';\nimport { filterTodos } from '../utils/filterTodos';\nimport TodoList from '../components/TodoList/TodoList';\nimport TodoInput from '../components/TodoInput/TodoInput';\nimport Footer from '../components/Footer/Footer';\n\nconst App: React.FC = () => {\n  const todos = useSelector((state: RootState) => state.todos.todos);\n  const filter = useSelector((state: RootState) => state.todos.filter);\n  const dispatch = useDispatch();\n\n  const handleMarkAllAsCompleted = () => {\n    dispatch(markAllAsCompleted());\n  };\n\n  const handleClearCompletedTodos = () => {\n    dispatch(clearCompletedTodos());\n  };\n\n  const filteredTodos = filterTodos(todos, filter);\n\n  return (\n    <section className=\"todoapp\">\n      <header className=\"header\">\n        <h1>todos</h1>\n        <TodoInput />\n      </header>\n      {todos.length > 0 && (\n        <section className=\"main\">\n          <input\n            id=\"toggle-all\"\n            className=\"toggle-all\"\n            type=\"checkbox\"\n            checked={todos.every((todo) => todo.completed)}\n            onChange={handleMarkAllAsCompleted}\n          />\n          <label htmlFor=\"toggle-all\">Mark all as complete</label>\n          <TodoList todos={filteredTodos} />\n        </section>\n      )}\n      {todos.length > 0 && (\n        <Footer\n          todos={todos}\n          filter={filter}\n          onClearCompleted={handleClearCompletedTodos}\n        />\n      )}\n    </section>\n  );\n};\n\nexport default App;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "2\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React from 'react';\nimport { Todo } from '../store/todos/types';\nimport TodoItem from '../components/TodoItem/TodoItem';\n\ninterface TodoListProps {\n  todos: Todo[];\n}\n\nconst TodoList: React.FC<TodoListProps> = ({ todos }) => {\n  return (\n    <ul className=\"todo-list\">\n      {todos.map((todo) => (\n        <TodoItem key={todo.id} todo={todo} />\n      ))}\n    </ul>\n  );\n};\n\nexport default TodoList;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "3\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React, { useState, useRef, useEffect } from 'react';\nimport { useDispatch } from 'react-redux';\nimport {\n  toggleTodo,\n  updateTodo,\n  deleteTodo,\n} from '../store/todos/todosSlice';\nimport { Todo } from '../store/todos/types';\n\ninterface TodoItemProps {\n  todo: Todo;\n}\n\nconst TodoItem: React.FC<TodoItemProps> = ({ todo }) => {\n  const [isEditing, setIsEditing] = useState(false);\n  const inputRef = useRef<HTMLInputElement>(null);\n  const dispatch = useDispatch();\n\n  const handleToggleTodo = () => {\n    dispatch(toggleTodo(todo.id));\n  };\n\n  const handleEditStart = () => {\n    setIsEditing(true);\n  };\n\n  const handleEditEnd = () => {\n    setIsEditing(false);\n  };\n\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n    dispatch(updateTodo({ id: todo.id, title: e.target.value }));\n  };\n\n  const handleDeleteTodo = () => {\n    dispatch(deleteTodo(todo.id));\n  };\n\n  useEffect(() => {\n    if (isEditing && inputRef.current) {\n      inputRef.current.focus();\n    }\n  }, [isEditing]);\n\n  return (\n    <li className={`${todo.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}>\n      <div className=\"view\">\n        <input\n          className=\"toggle\"\n          type=\"checkbox\"\n          checked={todo.completed}\n          onChange={handleToggleTodo}\n        />\n        <label onDoubleClick={handleEditStart}>{todo.title}</label>\n        <button className=\"destroy\" onClick={handleDeleteTodo}></button>\n      </div>\n      {isEditing && (\n        <input\n          className=\"edit\"\n          type=\"text\"\n          value={todo.title}\n          ref={inputRef}\n          onChange={handleInputChange}\n          onBlur={handleEditEnd}\n        />\n      )}\n    </li>\n  );\n};\n\nexport default TodoItem;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "4\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React, { useState } from 'react';\nimport { useDispatch } from 'react-redux';\nimport { addTodo } from '../store/todos/todosSlice';\nimport { nanoid } from 'nanoid';\n\nconst TodoInput: React.FC = () => {\n  const [newTodo, setNewTodo] = useState('');\n  const dispatch = useDispatch();\n\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n    setNewTodo(e.target.value);\n  };\n\n  const handleSubmit = (e: React.FormEvent) => {\n    e.preventDefault();\n    if (newTodo.trim() !== '') {\n      dispatch(addTodo({ id: nanoid(), title: newTodo.trim(), completed: false }));\n      setNewTodo('');\n    }\n  };\n\n  return (\n    <form onSubmit={handleSubmit} className=\"todo-form\">\n      <input\n        type=\"text\"\n        className=\"new-todo\"\n        placeholder=\"What needs to be done?\"\n        value={newTodo}\n        onChange={handleInputChange}\n        autoFocus\n      />\n    </form>\n  );\n};\n\nexport default TodoInput;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "5\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```tsx\nimport React from 'react';\nimport { useSelector, useDispatch } from 'react-redux';\nimport { RootState } from '../store';\nimport { setFilter } from '../store/todos/todosSlice';\nimport { Filter } from '../constants';\n\ninterface FooterProps {\n  todos: Todo[];\n  filter: Filter;\n  onClearCompleted: () => void;\n}\n\nconst Footer: React.FC<FooterProps> = ({ todos, filter, onClearCompleted }) => {\n  const dispatch = useDispatch();\n  const remainingTodos = todos.filter((todo) => !todo.completed).length;\n\n  const handleFilterChange = (newFilter: Filter) => {\n    dispatch(setFilter(newFilter));\n  };\n\n  return (\n    <footer className=\"footer\">\n      <span className=\"todo-count\">\n        <strong>{remainingTodos}</strong>\n        {remainingTodos === 1 ? ' item left' : ' items left'}\n      </span>\n      <ul className=\"filters\">\n        {Object.values(Filter).map((f) => (\n          <li key={f}>\n            <a\n              href={'#/' + f.toLowerCase()}\n              className={filter === f ? 'selected' : ''}\n              onClick={() => handleFilterChange(f)}\n            >\n              {f}\n            </a>\n          </li>\n        ))}\n      </ul>\n      {todos.some((todo) => todo.completed) && (\n        <button className=\"clear-completed\" onClick={onClearCompleted}>\n          Clear completed\n        </button>\n      )}\n    </footer>\n  );\n};\n\nexport default Footer;\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "6\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```ts\nimport { configureStore } from '@reduxjs/toolkit';\nimport todosReducer from './todos/todosSlice';\n\nconst store = configureStore({\n  reducer: {\n    todos: todosReducer,\n  },\n});\n\nexport type RootState = ReturnType<typeof store.getState>;\nexport type AppDispatch = typeof store.dispatch;\n\nexport default store;\n\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [
+          {
+            "startIndex": 108,
+            "endIndex": 290,
+            "license": "",
+            "url": "https://stackoverflow.com/questions/71514713/i-am-having-dependency-issues-installing-redujx-toolkit?rq=2",
+            "title": ""
+          },
+          {
+            "startIndex": 108,
+            "endIndex": 290,
+            "license": "",
+            "url": "https://stackoverflow.com/questions/71514713/i-am-having-dependency-issues-installing-redujx-toolkit?rq=2",
+            "title": ""
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://stackoverflow.com/questions/71514713/i-am-having-dependency-issues-installing-redujx-toolkit?rq=2",
+            "title": "",
+            "index": 1
+          }
+        ]
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "7\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```ts\nimport { createSlice, PayloadAction } from '@reduxjs/toolkit';\nimport { Todo, TodosState } from './types';\nimport { nanoid } from 'nanoid';\nimport { Filter } from '../../constants';\n\nconst initialState: TodosState = {\n  todos: [],\n  filter: Filter.ALL,\n};\n\nconst todosSlice = createSlice({\n  name: 'todos',\n  initialState,\n  reducers: {\n    addTodo: (state, action: PayloadAction<Todo>) => {\n      state.todos.push({\n        id: nanoid(),\n        title: action.payload.title,\n        completed: false,\n      });\n    },\n    toggleTodo: (state, action: PayloadAction<string>) => {\n      const todo = state.todos.find((todo) => todo.id === action.payload);\n      if (todo) {\n        todo.completed = !todo.completed;\n      }\n    },\n    updateTodo: (state, action: PayloadAction<{ id: string; title: string }>) => {\n      const todo = state.todos.find((todo) => todo.id === action.payload.id);\n      if (todo) {\n        todo.title = action.payload.title;\n      }\n    },\n    deleteTodo: (state, action: PayloadAction<string>) => {\n      state.todos = state.todos.filter((todo) => todo.id !== action.payload);\n    },\n    markAllAsCompleted: (state) => {\n      state.todos.forEach((todo) => {\n        todo.completed = true;\n      });\n    },\n    clearCompletedTodos: (state) => {\n      state.todos = state.todos.filter((todo) => !todo.completed);\n    },\n    setFilter: (state, action: PayloadAction<Filter>) => {\n      state.filter = action.payload;\n    },\n  },\n});\n\nexport const {\n  addTodo,\n  toggleTodo,\n  updateTodo,\n  deleteTodo,\n  markAllAsCompleted,\n  clearCompletedTodos,\n  setFilter,\n} = todosSlice.actions;\n\nexport default todosSlice.reducer;\n\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "8\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```ts\nexport interface Todo {\n  id: string;\n  title: string;\n  completed: boolean;\n}\n\nexport interface TodosState {\n  todos: Todo[];\n  filter: Filter;\n}\n\n```\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "9\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```ts\nexport enum Filter {\n  ALL = 'All',\n  ACTIVE = 'Active',\n  COMPLETED = 'Completed',\n}\n\n```\n\n\n\n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "10\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "```ts\nimport { Todo } from '../store/todos/types';\nimport { Filter } from '../constants';\n\nexport const filterTodos = (todos: Todo[], filter: Filter): Todo[] => {\n  switch (filter) {\n    case Filter.ALL:\n      return todos;\n    case Filter.ACTIVE:\n      return todos.filter((todo) => !todo.completed);\n    case Filter.COMPLETED:\n      return todos.filter((todo) => todo.completed);\n    default:\n      return todos;\n  }\n};\n\n```"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [
+          {
+            "startIndex": 230,
+            "endIndex": 408,
+            "license": "",
+            "url": "https://github.com/AnastasiiaBortnichuk/todo_app",
+            "title": ""
+          },
+          {
+            "startIndex": 230,
+            "endIndex": 408,
+            "license": "",
+            "url": "https://github.com/AnastasiiaBortnichuk/todo_app",
+            "title": ""
+          },
+          {
+            "startIndex": 196,
+            "endIndex": 370,
+            "license": "",
+            "url": "https://github.com/ngfk/todomvc-react-ts-redux",
+            "title": ""
+          },
+          {
+            "startIndex": 196,
+            "endIndex": 370,
+            "license": "",
+            "url": "https://github.com/ngfk/todomvc-react-ts-redux",
+            "title": ""
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://github.com/AnastasiiaBortnichuk/todo_app",
+            "title": "",
+            "index": 1
+          },
+          {
+            "url": "https://github.com/ngfk/todomvc-react-ts-redux",
+            "title": "",
+            "index": 2
+          }
+        ]
+      }
+    },
+    {
+      "author": "user",
+      "content": {
+        "parts": [
+          {
+            "text": "11\n"
+          }
+        ]
+      }
+    },
+    {
+      "author": "bot",
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "You requested file number 11, but the provided file structure only goes up to 10. Please double-check the file number you are requesting. \n"
+          }
+        ]
+      },
+      "groundingMetadata": {
+        "citations": [],
+        "sources": [],
+        "references": []
+      },
+      "citationMetadata": {
+        "citations": [],
+        "sources": []
+      }
+    }
+  ],
+  "model": "gemini-1.5-pro-preview-0514"
+}

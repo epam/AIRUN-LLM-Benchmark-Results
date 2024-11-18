@@ -1,0 +1,6 @@
+<div [ngClass]="{'has-error': isInvalid, 'has-success': isValid}" class="form-group">
+  <input [formControl]="control" [attr.placeholder]="placeholder" class="form-control" />
+  <span *ngIf="isInvalid" class="help-block">
+    {{ control.errors | json }}
+  </span>
+</div>

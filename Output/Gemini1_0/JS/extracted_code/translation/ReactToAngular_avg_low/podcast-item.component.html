@@ -1,0 +1,41 @@
+<div class="podcast-item">
+  <div class="header">
+    <div class="title">
+      <a *ngIf="showChannel" [routerLink]="['/channel', podcast.channelId]">{{ podcast.title }}</a>
+      <a *ngIf="!showChannel" [routerLink]="['/podcast', podcast.id]">{{ podcast.title }}</a>
+    </div>
+    <div class="played-at" *ngIf="isLoggedIn && podcast.lastPlayedAt">
+      <label class="label label-success">Listened {{ formatListenDate(podcast.lastPlayedAt) }}</label>
+    </div>
+    <div class="image" *ngIf="showImage">
+      <a [routerLink]="['/channel', podcast.channelId]">
+        <img [src]="podcast.image || '/static/podcast.png'" alt="{{ podcast.name }}" height="60" width="60" />
+      </a>
+      <div class="caption text-center">
+        <h5><a [routerLink]="['/channel', podcast.channelId]">{{ podcast.name }}</a></h5>
+      </div>
+    </div>
+    <div class="channel-name" *ngIf="!showImage">
+      <h5><a [routerLink]="['/channel', podcast.channelId]">{{ podcast.name }}</a></h5>
+    </div>
+  </div>
+  <div class="body">
+    <div class="description" [innerHTML]="description.__html" *ngIf="podcast.description && (podcast.isShowDetail || showExpanded)"></div>
+    <div class="buttons">
+      <button class="btn btn-default" (click)="togglePlayer()" title="{{ podcast.isPlaying ? 'Stop' : 'Play' }}">
+        <i class="fa" [ngClass]="{'fa-stop': podcast.isPlaying, 'fa-play': !podcast.isPlaying}"></i>
+      </button>
+      <button class="btn btn-default" [download]="true" [href]="podcast.enclosureUrl" title="Download this podcast">
+        <i class="fa fa-download"></i>
+      </button>
+      <button class="btn btn-default" *ngIf="isLoggedIn" (click)="toggleBookmark()" title="{{ podcast.isBookmarked ? 'Remove bookmark' : 'Add to bookmarks' }}">
+        <i class="fa" [ngClass]="{'fa-bookmark': podcast.isBookmarked, 'fa-bookmark-o': !podcast.isBookmarked}"></i>
+      </button>
+    </div>
+  </div>
+  <div class="footer">
+    <button class="btn btn-default" *ngIf="!podcast.isShowDetail && !showExpanded" (click)="toggleDetail()" title="{{ podcast.isShowDetail ? 'Hide details' : 'Show details' }}">
+      <i class="fa" [ngClass]="{'fa-chevron-up': podcast.isShowDetail, 'fa-chevron-down': !podcast.isShowDetail}"></i>
+    </button>
+  </div>
+</div>

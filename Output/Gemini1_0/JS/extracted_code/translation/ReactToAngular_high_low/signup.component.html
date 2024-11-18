@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card">
+        <div class="card-header">
+          <h2>Join PodBaby today.</h2>
+        </div>
+        <div class="card-body">
+          <p class="lead">
+            As a member you can subscribe to podcast feeds and keep track of your favorite episodes.
+          </p>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" id="name" formControlName="name" />
+              <div *ngIf="form.controls.name.invalid && (form.controls.name.dirty || form.controls.name.touched)" class="alert alert-danger">
+                <div *ngIf="form.controls.name.errors.required">Name is required.</div>
+                <div *ngIf="form.controls.name.errors.minlength">Name must be at least 3 characters long.</div>
+                <div *ngIf="form.controls.name.errors.maxlength">Name cannot be more than 60 characters long.</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" formControlName="email" />
+              <div *ngIf="form.controls.email.invalid && (form.controls.email.dirty || form.controls.email.touched)" class="alert alert-danger">
+                <div *ngIf="form.controls.email.errors.required">Email is required.</div>
+                <div *ngIf="form.controls.email.errors.email">Email is not valid.</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" formControlName="password" />
+              <div *ngIf="form.controls.password.invalid && (form.controls.password.dirty || form.controls.password.touched)" class="alert alert-danger">
+                <div *ngIf="form.controls.password.errors.required">Password is required.</div>
+                <div *ngIf="form.controls.password.errors.minlength">Password must be at least 6 characters long.</div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Signup</button>
+          </form>
+          <p>
+            <a [routerLink]="['/login']">Already a member? Log in here.</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

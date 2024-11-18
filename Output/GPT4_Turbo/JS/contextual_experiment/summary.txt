@@ -1,0 +1,4 @@
+translate_run0.json - run with a prompt to return all the code at once
+translate_run1.json - run with a prompt to return code by request (successful)
+update_run1.json - run with a prompt to update React and return all the code at once (partially successful)
+update_run2.json - run with a prompt to update React and return code by request (successful)

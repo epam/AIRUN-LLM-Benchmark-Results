@@ -1,0 +1,46 @@
+```json
+{
+  "name": "modern-react-todos",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "classnames": "^2.3.2",
+    "nanoid": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.1.1"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.3.2",
+    "@types/node": "^18.16.18",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.7",
+    "typescript": "^5.1.6"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+```

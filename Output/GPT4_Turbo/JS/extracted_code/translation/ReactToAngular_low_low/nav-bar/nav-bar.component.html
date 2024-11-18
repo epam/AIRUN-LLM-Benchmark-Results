@@ -1,0 +1,19 @@
+<nav class="navbar fixed-top" [ngClass]="{'expanded': expanded}">
+  <div class="navbar-header">
+    <a class="navbar-brand" routerLink="/"><app-icon icon="headphones"></app-icon> PodBaby</a>
+    <button (click)="handleToggle()">Toggle</button>
+  </div>
+
+  <div class="navbar-collapse" *ngIf="expanded">
+    <ul class="nav navbar-nav">
+      <li routerLinkActive="active" (click)="handleSelected()"><a routerLink="/new/"><app-icon icon="flash"></app-icon> New episodes</a></li>
+      <li routerLinkActive="active" (click)="handleSelected()"><a routerLink="/browse/"><app-icon icon="list"></app-icon> Browse</a></li>
+      <!-- Add other links similarly -->
+    </ul>
+    <ul class="nav navbar-nav pull-right" *ngIf="auth$ | async as auth">
+      <li *ngIf="auth.isLoggedIn" (click)="handleOpenAddChannelForm($event)"><a href="#"><app-icon icon="rss"></app-icon> Add new feed</a></li>
+      <li *ngIf="!auth.isLoggedIn" routerLinkActive="active" (click)="handleSelected()"><a routerLink="/login/"><app-icon icon="sign-in"></app-icon> Login</a></li>
+      <!-- Add other conditional links similarly -->
+    </ul>
+  </div>
+</nav>

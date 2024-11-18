@@ -1,0 +1,20 @@
+<header class="header">
+  <h1 class="header-title">Virtual Piano</h1>
+</header>
+<main class="main">
+  <div class="btn-container">
+    <button class="btn btn-notes btn-active" (click)="change('notes')">Notes</button>
+    <button class="btn btn-letters" (click)="change('letters')">Letters</button>
+  </div>
+  <div class="piano">
+    <div *ngFor="let key of keys" class="piano-key" [ngClass]="{'sharp': key.sharp}" (click)="play(key)"
+      (mousedown)="play(key)" (mouseup)="resetActive(key)" (mousemove)="play(key)" (mouseout)="resetActive(key)"
+      [attr.data-letter]="key.letter" [attr.data-note]="key.note"></div>
+  </div>
+  <button class="fullscreen openfullscreen" (click)="fullscreen()">Fullscreen</button>
+</main>
+<footer class="footer">
+  <div class="footer-container">
+    2020
+  </div>
+</footer>

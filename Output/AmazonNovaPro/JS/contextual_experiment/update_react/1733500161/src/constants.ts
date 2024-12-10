@@ -1,0 +1,1 @@
+export const ALL_TODOS = 'all';\nexport const ACTIVE_TODOS = 'active';\nexport const COMPLETED_TODOS = 'completed';\nexport const ENTER_KEY = 13;\nexport const ESCAPE_KEY = 27;

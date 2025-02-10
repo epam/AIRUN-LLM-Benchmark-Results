@@ -2,7 +2,7 @@
 
 ## Objective
 
-This repository contains the results of benchmarking various Large Language Models (LLMs). The benchmarks are designed to evaluate the performance, accuracy, and efficiency of different LLMs across a variety of tasks. It is a part of AI/RUN <sup>TM</sup> Engineering Benchmark. See more details in [AI/RUN <sup>TM</sup> Engineering Benchmark repo](https://git.epam.com/epm-ease/research/ai-run-engineering-benchmark)  to understand the whole picture on what the benchmark is and what repositories are involved.
+This repository contains the results of benchmarking various Large Language Models (LLMs). The benchmarks are designed to evaluate the performance, accuracy, and efficiency of different LLMs across a variety of tasks. It is a part of AI/RUN <sup>TM</sup> Engineering Benchmark. See more details in [AI/RUN <sup>TM</sup> Engineering Benchmark repo](https://github.com/epam/AIRUN-Engineering-Benchmark)  to understand the whole picture on what the benchmark is and what repositories are involved.
 
 ## Benchmarking Methodology
 

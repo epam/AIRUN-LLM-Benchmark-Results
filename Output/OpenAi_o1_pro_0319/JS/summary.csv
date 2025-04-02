@@ -1,0 +1,4 @@
+Experiment,Type,Category,Language,Models,Dataset,Complexity,Size,Attempt,Input,Reasons,Output,Time,Accuracy,Completeness,Accuracy_claude-3-7-sonnet@20250219,Completeness_claude-3-7-sonnet@20250219,Accuracy_o3-mini,Completeness_o3-mini
+code_translation,solution_migration,AngularToReact,Angular,OpenAi_o1_pro_0319,AngularCosmoPage,avg,high,1,5849,1152,5529,137.15,3.7,2.0,4.0,1.08,3.0,0.78
+code_generation,component_generation,GenerateReactApp,none,OpenAi_o1_pro_0319,none,none,none,1,364,768,1492,121.22,4.0,4.0,4.0,4.0,4.0,4.0
+code_documentation,code_explanation,DescribeTechnicalImplementation,Angular,OpenAi_o1_pro_0319,AngularCosmoPage,avg,high,1,5645,832,4147,118.18,3.98,3.7,4.0,4.0,3.96,2.97

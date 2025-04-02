@@ -1,0 +1,13 @@
+metric,score,weighted_score,is_confident,score_5,category,experiment,repository,scenario_id,model,score_2,score_3,score_4,score_1
+accuracy,5,5.0,True,1.0,AngularToReact_AngularCosmoPage_avg_high,solution_migration,angular_cosmo_page,7,claude-3-7-sonnet@20250219,,,,
+completeness,2,2.08,True,,AngularToReact_AngularCosmoPage_avg_high,solution_migration,angular_cosmo_page,7,claude-3-7-sonnet@20250219,0.92,0.08,,
+accuracy,4,4.0,True,,AngularToReact_AngularCosmoPage_avg_high,solution_migration,angular_cosmo_page,7,o3-mini,,,1.0,
+completeness,2,1.78,False,,AngularToReact_AngularCosmoPage_avg_high,solution_migration,angular_cosmo_page,7,o3-mini,0.78,,,0.22
+accuracy,5,5.0,True,1.0,GenerateReactApp,component_generation,,2,claude-3-7-sonnet@20250219,,,,
+completeness,5,5.0,True,1.0,GenerateReactApp,component_generation,,2,claude-3-7-sonnet@20250219,,,,
+accuracy,5,5.0,True,1.0,GenerateReactApp,component_generation,,2,o3-mini,,,,
+completeness,5,5.0,True,1.0,GenerateReactApp,component_generation,,2,o3-mini,,,,
+accuracy,5,5.0,True,1.0,DescribeTechnicalImplementation_AngularCosmoPage_avg_high,code_explanation,angular_cosmo_page,17,claude-3-7-sonnet@20250219,,,,
+completeness,5,5.0,True,1.0,DescribeTechnicalImplementation_AngularCosmoPage_avg_high,code_explanation,angular_cosmo_page,17,claude-3-7-sonnet@20250219,,,,
+accuracy,5,4.96,True,0.96,DescribeTechnicalImplementation_AngularCosmoPage_avg_high,code_explanation,angular_cosmo_page,17,o3-mini,,,0.04,
+completeness,4,3.97,True,,DescribeTechnicalImplementation_AngularCosmoPage_avg_high,code_explanation,angular_cosmo_page,17,o3-mini,,0.03,0.97,

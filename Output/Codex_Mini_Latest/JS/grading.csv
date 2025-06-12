@@ -65,8 +65,8 @@ accuracy,5,5.0,True,1.0,EvaluateCodeQuality_ReactSignUp_high_low,code_analysis,r
 completeness,5,5.0,True,1.0,EvaluateCodeQuality_ReactSignUp_high_low,code_analysis,react_sign_up,22,o3-mini,,,,
 accuracy,5,5.0,True,1.0,EvaluateCodeQuality_ToDoApp_ReactJS_high_avg,code_analysis,todo_app_react,21,claude-3-7-sonnet@20250219,
 completeness,5,5.0,True,1.0,EvaluateCodeQuality_ToDoApp_ReactJS_high_avg,code_analysis,todo_app_react,21,claude-3-7-sonnet@20250219,
-accuracy,5,5.0,True,1.0,EvaluateCodeQuality_ToDoApp_ReactJS_high_avg,code_analysis,todo_app_react,21,o3-mini,
-completeness,5,4.56,False,0.56,EvaluateCodeQuality_ToDoApp_ReactJS_high_avg,code_analysis,todo_app_react,21,o3-mini,0.44
+accuracy,5,4.68,False,0.68,EvaluateCodeQuality_ToDoApp_ReactJS_high_avg,code_analysis,todo_app_react,21,o3-mini,0.32
+completeness,4,4.22,False,0.22,EvaluateCodeQuality_ToDoApp_ReactJS_high_avg,code_analysis,todo_app_react,21,o3-mini,0.78
 accuracy,5,5.0,True,1.0,EvaluateCodeQuality_AngularCosmoPage_avg_high,code_analysis,angular_cosmo_page,20,claude-3-7-sonnet@20250219,,,,
 completeness,2,2.0,True,,EvaluateCodeQuality_AngularCosmoPage_avg_high,code_analysis,angular_cosmo_page,20,claude-3-7-sonnet@20250219,,,1.0,
 accuracy,5,5.0,True,1.0,EvaluateCodeQuality_AngularCosmoPage_avg_high,code_analysis,angular_cosmo_page,20,o3-mini,,,,

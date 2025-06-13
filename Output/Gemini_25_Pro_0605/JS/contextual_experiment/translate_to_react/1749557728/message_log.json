@@ -1,0 +1,146 @@
+{
+    "messages": [
+        {
+            "role": "user",
+            "content": "\nYour task is to translate outdated AngularJS app code to recent version of React using functional components and hooks.\nOutdated application is composed of the following files:\n<legacy_files_structure>\nindex.html\njs/main.js\njs/app.js\njs/directives/todoFocus.js\njs/directives/todoEscape.js\njs/controllers/todo.js\njs/services/todoStorage.js\n</legacy_files_structure>\n\nYour task is to request content of each file and analyze its implementation.\nYou should ask for files content by the json command. One command per request.\nExample:\n{\n    \"command\": \"read-file\",\n    \"file_path\": \"js/controllers/todo.js\" or \"app.tsx\"\n}\n\nAfter getting and analyzing of all file's content - think thoroughly and *return only new file structure* of translated React application in a form of JSON command.\nDo not provide styles file, previous styles will be applied.\nDo not provide any configs.\nExample:\n{\n    \"command\": \"file-structure\",\n    \"file_paths\": [\n        \"name1.ts\",\n        \"name2.tsx\",\n        \"...\",\n    ]\n}\n\nAfter you return the file structure of the updated application, \nI will request you for each file by the file_path in the list and you should use following command to give me converted file.\n\nApply these instructions for translated application:\n    - Use the following libraries: TypeScript, Redux Toolkit with createSlice, and nanoid.\n    - Provide configuration of the store and provider if needed.\n    - Split the code into separate components.\n    - Optimize the code where possible.\n    - The converted code should not contain any TODOs.\n    - Return the translated code as markdown code snippets.\n    - Simply return the codebase without additional comments or explanations on how to convert it.\n\n\nExample:\n{\n    \"command\": \"write-file\",\n    \"file_path\": \"path to file\"\n    \"content\": \"enscated converted code is here\"\n}\n\nDo not add any comments in generated code and follow the instructions precisely. Once you finish the whole task, please issue the \"end\" command.\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"index.html\"}"
+        },
+        {
+            "role": "user",
+            "content": "<!doctype html>\n<html lang=\"en\" data-framework=\"angularjs\">\n\t<head>\n\t\t<meta charset=\"utf-8\">\n\t\t<title>AngularJS & RequireJS \u2022 TodoMVC</title>\n\t\t<link rel=\"stylesheet\" href=\"node_modules/todomvc-common/base.css\">\n\t\t<link rel=\"stylesheet\" href=\"node_modules/todomvc-app-css/index.css\">\n\t\t<style>[ng-cloak] { display: none; }</style>\n\t</head>\n\t<body>\n\t\t<section class=\"todoapp\" ng-controller=\"TodoController\">\n\t\t\t<header class=\"header\">\n\t\t\t\t<h1>todos</h1>\n\t\t\t\t<form class=\"todo-form\" ng-submit=\"addTodo()\">\n\t\t\t\t\t<input class=\"new-todo\" placeholder=\"What needs to be done?\" ng-model=\"newTodo\" autofocus>\n\t\t\t\t</form>\n\t\t\t</header>\n\t\t\t<section class=\"main\" ng-show=\"todos.length\" ng-cloak>\n\t\t\t\t<input id=\"toggle-all\" class=\"toggle-all\" type=\"checkbox\" ng-model=\"allChecked\" ng-click=\"markAll(allChecked)\">\n\t\t\t\t<label for=\"toggle-all\">Mark all as complete</label>\n\t\t\t\t<ul class=\"todo-list\">\n\t\t\t\t\t<li ng-repeat=\"todo in todos | filter:statusFilter track by $index\" ng-class=\"{completed: todo.completed, editing: todo == editedTodo}\">\n\t\t\t\t\t\t<div class=\"view\">\n\t\t\t\t\t\t\t<input class=\"toggle\" type=\"checkbox\" ng-model=\"todo.completed\">\n\t\t\t\t\t\t\t<label ng-dblclick=\"editTodo(todo)\">{{todo.title}}</label>\n\t\t\t\t\t\t\t<button class=\"destroy\" ng-click=\"removeTodo(todo)\"></button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<form ng-submit=\"doneEditing(todo)\">\n\t\t\t\t\t\t\t<input class=\"edit\" ng-trim=\"false\" ng-model=\"todo.title\" ng-blur=\"doneEditing(todo)\" todo-escape=\"revertEditing(todo)\" todo-focus=\"todo == editedTodo\">\n\t\t\t\t\t\t</form>\n\t\t\t\t\t</li>\n\t\t\t\t</ul>\n\t\t\t</section>\n\t\t\t<footer class=\"footer\" ng-show=\"todos.length\" ng-cloak>\n\t\t\t\t<span class=\"todo-count\"><strong>{{remainingCount}}</strong>\n\t\t\t\t\t<ng-pluralize count=\"remainingCount\" when=\"{ one: 'item left', other: 'items left' }\"></ng-pluralize>\n\t\t\t\t</span>\n\t\t\t\t<ul class=\"filters\">\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a ng-class=\"{selected: location.path() == '/'} \" href=\"#/\">All</a>\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a ng-class=\"{selected: location.path() == '/active'}\" href=\"#/active\">Active</a>\n\t\t\t\t\t</li>\n\t\t\t\t\t<li>\n\t\t\t\t\t\t<a ng-class=\"{selected: location.path() == '/completed'}\" href=\"#/completed\">Completed</a>\n\t\t\t\t\t</li>\n\t\t\t\t</ul>\n\t\t\t\t<button class=\"clear-completed\" ng-click=\"clearDoneTodos()\" ng-show=\"remainingCount < todos.length\">Clear completed</button>\n\t\t\t</footer>\n\t\t</section>\n\t\t<footer class=\"info\">\n\t\t\t<p>Double-click to edit a todo</p>\n\t\t\t<p>Credits:\n\t\t\t\t<a href=\"http://twitter.com/cburgdorf\">Christoph Burgdorf</a>,\n\t\t\t\t<a href=\"http://ericbidelman.com\">Eric Bidelman</a>,\n\t\t\t\t<a href=\"http://jacobmumm.com\">Jacob Mumm</a>,\n\t\t\t\t<a href=\"http://blog.igorminar.com\">Igor Minar</a> and\n\t\t\t\t<a href=\"http://twitter.com/passy\">Pascal Hartig</a>\n\t\t\t</p>\n\t\t\t<p>Part of <a href=\"http://todomvc.com\">TodoMVC</a></p>\n\t\t</footer>\n\t\t<script src=\"node_modules/todomvc-common/base.js\"></script>\n\t\t<script data-main=\"js/main\" src=\"node_modules/requirejs/require.js\"></script>\n\t</body>\n</html>\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"js/main.js\"}"
+        },
+        {
+            "role": "user",
+            "content": "/*global require*/\n'use strict';\n\nrequire.config({\n\tpaths: {\n\t\tangular: '../node_modules/angular/angular'\n\t},\n\tshim: {\n\t\tangular: {\n\t\t\texports: 'angular'\n\t\t}\n\t},\n\tdeps: ['app']\n});\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"js/app.js\"}"
+        },
+        {
+            "role": "user",
+            "content": "/*global require*/\n'use strict';\n\nrequire([\n\t'angular'\n], function (angular) {\n\trequire([\n\t\t'controllers/todo', \n\t\t'directives/todoFocus', \n\t\t'directives/todoEscape',\n\t\t'services/todoStorage'\n\t], function (todoCtrl, todoFocusDir, todoEscapeDir, todoStorageSrv) {\n\t\tangular\n\t\t\t.module('todomvc', [todoFocusDir, todoEscapeDir, todoStorageSrv])\n\t\t\t.controller('TodoController', todoCtrl);\n\t\tangular.bootstrap(document, ['todomvc']);\t\t\t\n\t});\t\n});\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"js/directives/todoFocus.js\"}"
+        },
+        {
+            "role": "user",
+            "content": "/*global define*/\n'use strict';\n\n/**\n * Directive that places focus on the element it is applied to when the expression it binds to evaluates to true.\n */\n \ndefine([\n\t'angular'\n], function (angular) {\n\tvar moduleName = 'TodoFocusDirective';\n\tangular\n\t\t.module(moduleName, [])\n\t\t.directive('todoFocus', ['$timeout', function ($timeout) {\n\t\t\treturn function (scope, elem, attrs) {\n\t\t\t\tscope.$watch(attrs.todoFocus, function (newval) {\n\t\t\t\t\tif (newval) {\n\t\t\t\t\t\t$timeout(function () {\n\t\t\t\t\t\t\telem[0].focus();\n\t\t\t\t\t\t}, 0, false);\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t};\n\t\t}]);\n\treturn moduleName;\n});\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"js/directives/todoEscape.js\"}"
+        },
+        {
+            "role": "user",
+            "content": "/*global define*/\n'use strict';\n\n/**\n * Directive that catches the \"Escape\" key on the element applied to and evaluates the expression it binds to.\n */\n\ndefine([\n\t'angular'\n], function (angular) {\n\tvar moduleName = 'TodoEscapeDirective';\n\tangular\n\t\t.module(moduleName, [])\n\t\t.directive('todoEscape', function () {\n\t\t\tvar ESCAPE_KEY = 27;\n\n\t\t\treturn function (scope, elem, attrs) {\n\t\t\t\telem.bind('keydown', function (event) {\n\t\t\t\t\tif (event.keyCode === ESCAPE_KEY) {\n\t\t\t\t\t\tscope.$apply(attrs.todoEscape);\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tscope.$on('$destroy', function () {\n\t\t\t\t\telem.unbind('keydown');\n\t\t\t\t});\n\t\t\t};\n\t\t});\n\treturn moduleName;\n});\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"js/controllers/todo.js\"}"
+        },
+        {
+            "role": "user",
+            "content": "/*global define*/\n'use strict';\n\n/**\n * The main controller for the app. The controller:\n * - retrieves and persist the model via the todoStorage service\n * - exposes the model to the template and provides event handlers\n */\n\ndefine([\n\t'angular'\n], function (angular) {\n\treturn ['$scope', '$location', 'todoStorage', 'filterFilter',\n\t\tfunction ($scope, $location, todoStorage, filterFilter) {\n\t\t\tvar todos = $scope.todos = todoStorage.get();\n\n\t\t\t$scope.newTodo = '';\n\t\t\t$scope.editedTodo = null;\n\n\t\t\t$scope.$watch('todos', function () {\n\t\t\t\t$scope.remainingCount = filterFilter(todos, { completed: false }).length;\n\t\t\t\t$scope.doneCount = todos.length - $scope.remainingCount;\n\t\t\t\t$scope.allChecked = !$scope.remainingCount;\n\t\t\t\ttodoStorage.put(todos);\n\t\t\t}, true);\n\n\t\t\tif ($location.path() === '') {\n\t\t\t\t$location.path('/');\n\t\t\t}\n\n\t\t\t$scope.location = $location;\n\n\t\t\t$scope.$watch('location.path()', function (path) {\n\t\t\t\t$scope.statusFilter = (path === '/active') ?\n\t\t\t\t\t{ completed: false } : (path === '/completed') ?\n\t\t\t\t\t{ completed: true } : null;\n\t\t\t});\n\n\n\t\t\t$scope.addTodo = function () {\n\t\t\t\tvar newTodo = $scope.newTodo.trim();\n\t\t\t\tif (!newTodo.length) {\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\ttodos.push({\n\t\t\t\t\ttitle: newTodo,\n\t\t\t\t\tcompleted: false\n\t\t\t\t});\n\n\t\t\t\t$scope.newTodo = '';\n\t\t\t};\n\n\n\t\t\t$scope.editTodo = function (todo) {\n\t\t\t\t$scope.editedTodo = todo;\n\t\t\t\t// Clone the original todo to restore it on demand.\n\t\t\t\t$scope.originalTodo = angular.copy(todo);\n\t\t\t};\n\n\n\t\t\t$scope.doneEditing = function (todo) {\n\t\t\t\t$scope.editedTodo = null;\n\t\t\t\ttodo.title = todo.title.trim();\n\n\t\t\t\tif (!todo.title) {\n\t\t\t\t\t$scope.removeTodo(todo);\n\t\t\t\t}\n\t\t\t};\n\n\t\t\t$scope.revertEditing = function (todo) {\n\t\t\t\ttodos[todos.indexOf(todo)] = $scope.originalTodo;\n\t\t\t\t$scope.doneEditing($scope.originalTodo);\n\t\t\t};\n\n\t\t\t$scope.removeTodo = function (todo) {\n\t\t\t\ttodos.splice(todos.indexOf(todo), 1);\n\t\t\t};\n\n\n\t\t\t$scope.clearDoneTodos = function () {\n\t\t\t\t$scope.todos = todos = todos.filter(function (val) {\n\t\t\t\t\treturn !val.completed;\n\t\t\t\t});\n\t\t\t};\n\n\n\t\t\t$scope.markAll = function (done) {\n\t\t\t\ttodos.forEach(function (todo) {\n\t\t\t\t\ttodo.completed = done;\n\t\t\t\t});\n\t\t\t};\n\t\t}\n\t];\n});\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"read-file\", \"file_path\": \"js/services/todoStorage.js\"}"
+        },
+        {
+            "role": "user",
+            "content": "/*global define*/\n'use strict';\n\n/**\n * Services that persists and retrieves TODOs from localStorage.\n */\n \ndefine([\n\t'angular'\n], function (angular) {\n\tvar moduleName = 'TodoStorageModule';\n\tangular\n\t\t.module(moduleName, [])\n\t\t.factory('todoStorage', function () {\n\t\t\tvar STORAGE_ID = 'todos-angularjs-requirejs';\n\n\t\t\treturn {\n\t\t\t\tget: function () {\n\t\t\t\t\treturn JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');\n\t\t\t\t},\n\n\t\t\t\tput: function (todos) {\n\t\t\t\t\tlocalStorage.setItem(STORAGE_ID, JSON.stringify(todos));\n\t\t\t\t}\n\t\t\t};\n\t\t});\n\treturn moduleName;\n});\n"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"file-structure\", \"file_paths\": [\"src/index.tsx\", \"src/App.tsx\", \"src/types.ts\", \"src/store/store.ts\", \"src/store/todosSlice.ts\", \"src/components/Header.tsx\", \"src/components/TodoList.tsx\", \"src/components/TodoItem.tsx\", \"src/components/Footer.tsx\"]}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/components/Footer.tsx"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/components/Footer.tsx\", \"content\": \"import React from 'react';\\nimport { useSelector, useDispatch } from 'react-redux';\\nimport { RootState } from '../store/store';\\nimport { clearCompleted } from '../store/todosSlice';\\n\\nconst Footer: React.FC = () => {\\n    const dispatch = useDispatch();\\n    const todos = useSelector((state: RootState) => state.todos.todos);\\n    const currentFilter = useSelector((state: RootState) => state.todos.filter);\\n\\n    const todosCount = todos.length;\\n    const activeCount = todos.filter(todo => !todo.completed).length;\\n    const completedCount = todosCount - activeCount;\\n\\n    const handleClearCompleted = () => {\\n        dispatch(clearCompleted());\\n    };\\n\\n    if (todosCount === 0) {\\n        return null;\\n    }\\n\\n    return (\\n        <footer className=\\\"footer\\\">\\n            <span className=\\\"todo-count\\\">\\n                <strong>{activeCount}</strong> {activeCount === 1 ? 'item' : 'items'} left\\n            </span>\\n            <ul className=\\\"filters\\\">\\n                <li>\\n                    <a\\n                        href=\\\"#/\\\"\\n                        className={currentFilter === 'all' ? 'selected' : ''}\\n                    >\\n                        All\\n                    </a>\\n                </li>\\n                <li>\\n                    <a\\n                        href=\\\"#/active\\\"\\n                        className={currentFilter === 'active' ? 'selected' : ''}\\n                    >\\n                        Active\\n                    </a>\\n                </li>\\n                <li>\\n                    <a\\n                        href=\\\"#/completed\\\"\\n                        className={currentFilter === 'completed' ? 'selected' : ''}\\n                    >\\n                        Completed\\n                    </a>\\n                </li>\\n            </ul>\\n            {completedCount > 0 && (\\n                <button className=\\\"clear-completed\\\" onClick={handleClearCompleted}>\\n                    Clear completed\\n                </button>\\n            )}\\n        </footer>\\n    );\\n};\\n\\nexport default Footer;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/components/TodoItem.tsx"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/components/TodoItem.tsx\", \"content\": \"import React, { useState, useRef, useEffect } from 'react';\\nimport { useDispatch } from 'react-redux';\\nimport { toggleTodo, removeTodo, updateTodo } from '../store/todosSlice';\\nimport { Todo } from '../types';\\n\\ninterface TodoItemProps {\\n    todo: Todo;\\n}\\n\\nconst TodoItem: React.FC<TodoItemProps> = ({ todo }) => {\\n    const dispatch = useDispatch();\\n    const [editing, setEditing] = useState(false);\\n    const [editText, setEditText] = useState(todo.title);\\n    const editInputRef = useRef<HTMLInputElement>(null);\\n\\n    useEffect(() => {\\n        if (editing) {\\n            editInputRef.current?.focus();\\n        }\\n    }, [editing]);\\n\\n    const handleToggle = () => {\\n        dispatch(toggleTodo(todo.id));\\n    };\\n\\n    const handleDelete = () => {\\n        dispatch(removeTodo(todo.id));\\n    };\\n\\n    const handleDoubleClick = () => {\\n        setEditing(true);\\n    };\\n\\n    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {\\n        setEditText(e.target.value);\\n    };\\n\\n    const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {\\n        e?.preventDefault();\\n        const trimmedText = editText.trim();\\n        if (trimmedText) {\\n            dispatch(updateTodo({ id: todo.id, title: trimmedText }));\\n        } else {\\n            handleDelete();\\n        }\\n        setEditing(false);\\n    };\\n\\n    const handleBlur = () => {\\n        handleSubmit();\\n    };\\n\\n    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {\\n        if (e.key === 'Escape') {\\n            setEditText(todo.title);\\n            setEditing(false);\\n        } else if (e.key === 'Enter') {\\n            handleSubmit();\\n        }\\n    };\\n\\n    const liClasses = [\\n        todo.completed ? 'completed' : '',\\n        editing ? 'editing' : ''\\n    ].join(' ').trim();\\n\\n    return (\\n        <li className={liClasses}>\\n            <div className=\\\"view\\\">\\n                <input\\n                    className=\\\"toggle\\\"\\n                    type=\\\"checkbox\\\"\\n                    checked={todo.completed}\\n                    onChange={handleToggle}\\n                />\\n                <label onDoubleClick={handleDoubleClick}>{todo.title}</label>\\n                <button className=\\\"destroy\\\" onClick={handleDelete}></button>\\n            </div>\\n            {editing && (\\n                <form onSubmit={handleSubmit}>\\n                    <input\\n                        ref={editInputRef}\\n                        className=\\\"edit\\\"\\n                        value={editText}\\n                        onChange={handleEditChange}\\n                        onBlur={handleBlur}\\n                        onKeyDown={handleKeyDown}\\n                    />\\n                </form>\\n            )}\\n        </li>\\n    );\\n};\\n\\nexport default TodoItem;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/components/TodoList.tsx"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/components/TodoList.tsx\", \"content\": \"import React from 'react';\\nimport { useSelector, useDispatch } from 'react-redux';\\nimport { RootState } from '../store/store';\\nimport { toggleAll } from '../store/todosSlice';\\nimport TodoItem from './TodoItem';\\n\\nconst TodoList: React.FC = () => {\\n    const dispatch = useDispatch();\\n    const todos = useSelector((state: RootState) => state.todos.todos);\\n    const filter = useSelector((state: RootState) => state.todos.filter);\\n\\n    const filteredTodos = todos.filter(todo => {\\n        if (filter === 'active') {\\n            return !todo.completed;\\n        }\\n        if (filter === 'completed') {\\n            return todo.completed;\\n        }\\n        return true;\\n    });\\n\\n    const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);\\n\\n    const handleToggleAll = () => {\\n        dispatch(toggleAll(!allCompleted));\\n    };\\n\\n    if (todos.length === 0) {\\n        return null;\\n    }\\n\\n    return (\\n        <section className=\\\"main\\\">\\n            <input\\n                id=\\\"toggle-all\\\"\\n                className=\\\"toggle-all\\\"\\n                type=\\\"checkbox\\\"\\n                checked={allCompleted}\\n                onChange={handleToggleAll}\\n            />\\n            <label htmlFor=\\\"toggle-all\\\">Mark all as complete</label>\\n            <ul className=\\\"todo-list\\\">\\n                {filteredTodos.map(todo => (\\n                    <TodoItem key={todo.id} todo={todo} />\\n                ))}\\n            </ul>\\n        </section>\\n    );\\n};\\n\\nexport default TodoList;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/components/Header.tsx"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/components/Header.tsx\", \"content\": \"import React, { useState } from 'react';\\nimport { useDispatch } from 'react-redux';\\nimport { addTodo } from '../store/todosSlice';\\n\\nconst Header: React.FC = () => {\\n    const [newTodo, setNewTodo] = useState('');\\n    const dispatch = useDispatch();\\n\\n    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {\\n        setNewTodo(e.target.value);\\n    };\\n\\n    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {\\n        e.preventDefault();\\n        const trimmedTodo = newTodo.trim();\\n        if (trimmedTodo) {\\n            dispatch(addTodo(trimmedTodo));\\n            setNewTodo('');\\n        }\\n    };\\n\\n    return (\\n        <header className=\\\"header\\\">\\n            <h1>todos</h1>\\n            <form className=\\\"todo-form\\\" onSubmit={handleSubmit}>\\n                <input\\n                    className=\\\"new-todo\\\"\\n                    placeholder=\\\"What needs to be done?\\\"\\n                    value={newTodo}\\n                    onChange={handleChange}\\n                    autoFocus\\n                />\\n            </form>\\n        </header>\\n    );\\n};\\n\\nexport default Header;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/store/todosSlice.ts"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/store/todosSlice.ts\", \"content\": \"import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';\\nimport { Todo, Filter } from '../types';\\n\\nconst STORAGE_ID = 'todos-react-toolkit';\\n\\nconst getInitialTodos = (): Todo[] => {\\n    try {\\n        const storedTodos = localStorage.getItem(STORAGE_ID);\\n        return storedTodos ? JSON.parse(storedTodos) : [];\\n    } catch (error) {\\n        console.error(\\\"Failed to parse todos from localStorage\\\", error);\\n        return [];\\n    }\\n};\\n\\nconst saveTodos = (todos: Todo[]) => {\\n    localStorage.setItem(STORAGE_ID, JSON.stringify(todos));\\n};\\n\\ninterface TodosState {\\n    todos: Todo[];\\n    filter: Filter;\\n}\\n\\nconst initialState: TodosState = {\\n    todos: getInitialTodos(),\\n    filter: 'all',\\n};\\n\\nconst todosSlice = createSlice({\\n    name: 'todos',\\n    initialState,\\n    reducers: {\\n        addTodo: {\\n            reducer: (state, action: PayloadAction<Todo>) => {\\n                state.todos.push(action.payload);\\n                saveTodos(state.todos);\\n            },\\n            prepare: (title: string) => ({\\n                payload: {\\n                    id: nanoid(),\\n                    title,\\n                    completed: false,\\n                },\\n            }),\\n        },\\n        toggleTodo(state, action: PayloadAction<string>) {\\n            const todo = state.todos.find(todo => todo.id === action.payload);\\n            if (todo) {\\n                todo.completed = !todo.completed;\\n                saveTodos(state.todos);\\n            }\\n        },\\n        removeTodo(state, action: PayloadAction<string>) {\\n            state.todos = state.todos.filter(todo => todo.id !== action.payload);\\n            saveTodos(state.todos);\\n        },\\n        updateTodo(state, action: PayloadAction<{ id: string; title: string }>) {\\n            const todo = state.todos.find(todo => todo.id === action.payload.id);\\n            if (todo) {\\n                todo.title = action.payload.title;\\n                saveTodos(state.todos);\\n            }\\n        },\\n        clearCompleted(state) {\\n            state.todos = state.todos.filter(todo => !todo.completed);\\n            saveTodos(state.todos);\\n        },\\n        toggleAll(state, action: PayloadAction<boolean>) {\\n            state.todos.forEach(todo => {\\n                todo.completed = action.payload;\\n            });\\n            saveTodos(state.todos);\\n        },\\n        setFilter(state, action: PayloadAction<Filter>) {\\n            state.filter = action.payload;\\n        },\\n    },\\n});\\n\\nexport const {\\n    addTodo,\\n    toggleTodo,\\n    removeTodo,\\n    updateTodo,\\n    clearCompleted,\\n    toggleAll,\\n    setFilter,\\n} = todosSlice.actions;\\n\\nexport default todosSlice.reducer;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/store/store.ts"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/store/store.ts\", \"content\": \"import { configureStore } from '@reduxjs/toolkit';\\nimport todosReducer from './todosSlice';\\n\\nexport const store = configureStore({\\n    reducer: {\\n        todos: todosReducer,\\n    },\\n});\\n\\nexport type RootState = ReturnType<typeof store.getState>;\\nexport type AppDispatch = typeof store.dispatch;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/types.ts"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/types.ts\", \"content\": \"export interface Todo {\\n    id: string;\\n    title: string;\\n    completed: boolean;\\n}\\n\\nexport type Filter = 'all' | 'active' | 'completed';\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/App.tsx"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/App.tsx\", \"content\": \"import React, { useEffect } from 'react';\\nimport { useDispatch } from 'react-redux';\\nimport { setFilter } from './store/todosSlice';\\nimport { Filter } from './types';\\nimport Header from './components/Header';\\nimport TodoList from './components/TodoList';\\nimport Footer from './components/Footer';\\n\\nconst App: React.FC = () => {\\n    const dispatch = useDispatch();\\n\\n    useEffect(() => {\\n        const handleHashChange = () => {\\n            const hash = window.location.hash.replace(/^#\\\\//, '');\\n            let filter: Filter = 'all';\\n            if (hash === 'active' || hash === 'completed') {\\n                filter = hash;\\n            }\\n            dispatch(setFilter(filter));\\n        };\\n\\n        window.addEventListener('hashchange', handleHashChange);\\n        handleHashChange();\\n\\n        return () => {\\n            window.removeEventListener('hashchange', handleHashChange);\\n        };\\n    }, [dispatch]);\\n\\n    return (\\n        <>\\n            <section className=\\\"todoapp\\\">\\n                <Header />\\n                <TodoList />\\n                <Footer />\\n            </section>\\n            <footer className=\\\"info\\\">\\n                <p>Double-click to edit a todo</p>\\n                <p>Created by the TodoMVC Team</p>\\n                <p>Part of <a href=\\\"http://todomvc.com\\\">TodoMVC</a></p>\\n            </footer>\\n        </>\\n    );\\n};\\n\\nexport default App;\\n\"}"
+        },
+        {
+            "role": "user",
+            "content": "Give me converted code of src/index.tsx"
+        },
+        {
+            "role": "model",
+            "content": "{\"command\": \"write-file\", \"file_path\": \"src/index.tsx\", \"content\": \"import React from 'react';\\nimport ReactDOM from 'react-dom/client';\\nimport { Provider } from 'react-redux';\\nimport { store } from './store/store';\\nimport App from './App';\\nimport 'todomvc-common/base.css';\\nimport 'todomvc-app-css/index.css';\\n\\nconst root = ReactDOM.createRoot(\\n  document.getElementsByClassName('todoapp')[0] as HTMLElement\\n);\\n\\nroot.render(\\n  <React.StrictMode>\\n    <Provider store={store}>\\n      <App />\\n    </Provider>\\n  </React.StrictMode>\\n);\\n\"}"
+        }
+    ],
+    "time": 256,
+    "total_tokens": {
+        "input_tokens": 63411,
+        "output_tokens": 20265,
+        "reasoning_tokens": 16542
+    }
+}

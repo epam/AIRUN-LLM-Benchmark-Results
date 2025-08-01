@@ -32,5 +32,5 @@ evaluation_steps:
 metadata:
   category: WriteTestsForLegacyCode_AngularCosmoPage_avg_high
   experiment: test_generation
-  repository: angular_cosmo_page
+  repository: angularjs_cosmo_page
   scenario_id: 4

@@ -29,5 +29,5 @@ evaluation_steps:
 metadata:
   category: DescribeTechnicalImplementation_AngularCosmoPage_avg_high
   experiment: code_explanation
-  repository: angular_cosmo_page
+  repository: angularjs_cosmo_page
   scenario_id: 17

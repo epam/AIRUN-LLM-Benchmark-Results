@@ -42,5 +42,5 @@ evaluation_steps:
 metadata:
   category: BusinessFunctionality_AngularCosmoPage_avg_high
   experiment: solution_documentation
-  repository: angular_cosmo_page
+  repository: angularjs_cosmo_page
   scenario_id: 14
